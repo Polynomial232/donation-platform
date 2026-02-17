@@ -5,6 +5,8 @@ interface SoundboardProps {
   activeSound?: {
     name: string;
     isPlaying: boolean;
+    sender?: string;
+    amount?: number;
   };
 }
 
@@ -24,7 +26,17 @@ export function Soundboard({ activeSound }: SoundboardProps) {
       >
         <Volume2 size={20} className="text-[var(--color-accent-yellow)]" />
       </motion.div>
-      <span className="font-medium text-sm">Playing: <span className="font-bold text-[var(--color-accent-yellow)]">{activeSound.name}</span></span>
+      <div className="flex flex-col text-sm leading-tight">
+        <span className="font-medium">
+          Playing: <span className="font-bold text-[var(--color-accent-yellow)]">{activeSound.name}</span>
+        </span>
+        {(activeSound.sender || activeSound.amount) && (
+          <span className="text-xs text-white/80">
+            {activeSound.sender && <span>by {activeSound.sender} </span>}
+            {activeSound.amount && <span>(IDR {activeSound.amount.toLocaleString('id-ID')})</span>}
+          </span>
+        )}
+      </div>
 
       {/* Visualizer bars simulation */}
       <div className="flex gap-1 h-3 items-end">

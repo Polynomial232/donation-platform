@@ -9,15 +9,19 @@ export default function AlertOverlayPage() {
   useEffect(() => {
     // In real app, listen to socket or SSE here
     const timer = setInterval(() => {
-      if (Math.random() > 0.6) {
-        setAlert({
-          type: "donation",
-          user: "RandomUser_" + Math.floor(Math.random() * 100),
-          amount: 10000 * Math.floor(Math.random() * 10),
-          message: "Semangat bang streamingnya!",
-        });
-      }
-    }, 5000);
+      // if (Math.random() > 0.6) {
+      setAlert({
+        type: "share",
+        user: "MediaShareUser",
+        // amount: 10000,
+        message: "Check out this awesome song!",
+        media: {
+          type: "youtube",
+          url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" // Rick Roll for testing :D
+        }
+      });
+      // }
+    }, 15000);
     return () => clearInterval(timer);
   }, []);
 

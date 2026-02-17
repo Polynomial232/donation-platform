@@ -97,7 +97,7 @@ export default function OverlayPage() {
             {/* Center: Alerts & Soundboard & Gacha */}
             <div className="absolute inset-0 flex flex-col items-center justify-center p-12 pointer-events-none">
                 <div className="pointer-events-auto mb-8">
-                    <Soundboard activeSound={{ name: "Bruh Sound Effect #2", isPlaying: true }} />
+                    <Soundboard activeSound={{ name: "Bruh Sound Effect #2", isPlaying: true, amount: 10000, sender: "Tester123" }} />
                 </div>
 
                 {alert && (
