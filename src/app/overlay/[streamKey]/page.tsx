@@ -1,65 +1,123 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { cn } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion"; // Need to install framer-motion or use CSS animations. I'll use CSS for now to avoid extra deps if not requested, but Framer Motion is standard for React animations.
-// Actually, simple CSS animations are better for performance in OBS if possible, but React Transition Group or similar is good.
-// I'll stick to simple conditional rendering with CSS classes for now to keep it lightweight, or install framer-motion if I want to impress.
-// The user asked for "modern, beautiful". I will use standard CSS animations for now.
+import { Alert, OverlayEvent } from "@/components/overlay/Alert";
+import { Goal } from "@/components/overlay/Goal";
+import { RunningText } from "@/components/overlay/RunningText";
+import { Leaderboard } from "@/components/overlay/Leaderboard";
+import { Soundboard } from "@/components/overlay/Soundboard";
+import { Milestone } from "@/components/overlay/Milestone";
+import { EventFeed } from "@/components/overlay/EventFeed";
+import { QRCodeOverlay } from "@/components/overlay/QRCode"; // Renamed to avoid reserved word conflict if any
+import { Subathon } from "@/components/overlay/Subathon";
+import { Poll } from "@/components/overlay/Poll";
+import { Gacha } from "@/components/overlay/Gacha";
+
+// Mock Data
+const MOCK_LEADERBOARD = [
+    { rank: 1, name: "Sultan_Budi", amount: 5000000 },
+    { rank: 2, name: "Windah_Fans", amount: 2500000 },
+    { rank: 3, name: "Reynaldi", amount: 1000000 },
+    { rank: 4, name: "Asep_Gaming", amount: 500000 },
+    { rank: 5, name: "Joko_99", amount: 250000 },
+];
+
+const MOCK_EVENTS = [
+    { id: "1", user: "Budi01", action: "donated Rp 20.000", time: "2m ago" },
+    { id: "2", user: "Siti_G", action: "subscribed (Prime)", time: "5m ago" },
+    { id: "3", user: "Udin_World", action: "followed", time: "10m ago" },
+];
+
+const MOCK_POLL = {
+    question: "Game selanjutnya?",
+    options: [
+        { id: "1", label: "Mobile Legends", votes: 450 },
+        { id: "2", label: "Valorant", votes: 320 },
+        { id: "3", label: "Horror Game", votes: 890 },
+    ],
+    totalVotes: 1660,
+};
 
 export default function OverlayPage() {
-    const [alert, setAlert] = useState<{
-        name: string;
-        amount: number;
-        message: string;
-        mediaUrl?: string;
-        type: "donation" | "mediashare";
-    } | null>({
-        name: "Budi01",
-        amount: 20000,
-        message: "Bang sapa gw dong...",
-        type: "donation",
-    });
+    const [alert, setAlert] = useState<OverlayEvent | null>(null);
 
-    // Simulator for demo purposes
+    // Simulation Loop
     useEffect(() => {
         const timer = setInterval(() => {
-            // Toggle alert visibility for demo
-            setAlert((prev) => prev ? null : {
-                name: "Siti_G",
-                amount: 50000,
-                message: "Request lagu galau",
-                type: "donation"
-            });
-        }, 5000);
+            // Randomly trigger an alert every 10-15s
+            if (Math.random() > 0.7) {
+                setAlert({
+                    type: "donation",
+                    user: "RandomUser_" + Math.floor(Math.random() * 100),
+                    amount: 10000 * Math.floor(Math.random() * 10),
+                    message: "Semangat bang streamingnya!",
+                });
+            }
+        }, 8000);
         return () => clearInterval(timer);
     }, []);
 
-    if (!alert) return null;
-
     return (
-        <div className="w-screen h-screen overflow-hidden bg-transparent flex flex-col items-center justify-center p-10">
-            {/* Container for the alert */}
-            <div className={cn(
-                "relative bg-white rounded-3xl p-6 shadow-2xl flex flex-col items-center gap-4 text-center max-w-md w-full animate-in slide-in-from-bottom-10 fade-in duration-500 border-4 border-[var(--color-accent-yellow)]"
-            )}>
-                {/* Image / GIF */}
-                <div className="w-full h-48 bg-slate-100 rounded-2xl overflow-hidden relative">
-                    <img
-                        src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExcDdtY2J5cnZ5eG15Y2J5cnZ5eG15Y2J5cnZ5eG15Y2J5cnZ5eGwzMiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l0HlHFRbmaZtBRhXG/giphy.gif"
-                        alt="Alert GIF"
-                        className="w-full h-full object-cover"
-                    />
+        <div className="relative w-screen h-screen overflow-hidden bg-transparent font-sans">
+            {/* Grid Layout for Demo Purposes */}
+            {/* In a real OBS setup, these would be separate browser sources or positioned absolutely */}
+
+            {/* Top Left: Goal & Subathon */}
+            <div className="absolute top-4 left-4 flex flex-col gap-4">
+                <Goal title="Donation Goal" current={1500000} target={5000000} />
+                <Subathon startTime={Date.now()} endTime={Date.now() + 1000 * 60 * 60 * 4} />
+            </div>
+
+            {/* Top Right: Leaderboard */}
+            <div className="absolute top-4 right-4">
+                <Leaderboard entries={MOCK_LEADERBOARD} />
+            </div>
+
+            {/* Bottom Right: Event Feed & Poll */}
+            <div className="absolute bottom-16 right-4 flex flex-col items-end gap-4">
+                <Poll {...MOCK_POLL} />
+                <EventFeed events={MOCK_EVENTS} />
+            </div>
+
+            {/* Bottom Left: QR & Milestones */}
+            <div className="absolute bottom-16 left-4 flex gap-4 items-end">
+                <QRCodeOverlay data="https://saweria.co/yourprofile" />
+                <Milestone
+                    currentValue={10000}
+                    steps={[
+                        { value: 1000, label: "Face Reveal", completed: true },
+                        { value: 5000, label: "Horror Game", completed: true },
+                        { value: 10000, label: "Giveaway PC", completed: true },
+                        { value: 20000, label: "Giveaway Console", completed: true },
+                        { value: 30000, label: "Giveaway Console", completed: false },
+                    ]}
+                />
+            </div>
+
+            {/* Center: Alerts & Soundboard & Gacha */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center p-12 pointer-events-none">
+                <div className="pointer-events-auto mb-8">
+                    <Soundboard activeSound={{ name: "Bruh Sound Effect #2", isPlaying: true }} />
                 </div>
 
-                {/* Text Content */}
-                <div className="space-y-1">
-                    <h1 className="text-2xl font-black text-[var(--color-deep-purple)]">
-                        <span className="text-slate-800">{alert.name}</span> donated <span className="text-[var(--color-accent-purple)]">Rp {alert.amount.toLocaleString()}</span>!
-                    </h1>
-                    <p className="text-lg font-bold text-slate-600 font-sans">"{alert.message}"</p>
+                {alert && (
+                    <div className="pointer-events-auto">
+                        <Alert event={alert} onComplete={() => setAlert(null)} />
+                    </div>
+                )}
+
+                <div className="pointer-events-auto mt-8 opacity-80 hover:opacity-100 transition-opacity">
+                    <Gacha />
                 </div>
             </div>
+
+            {/* Bottom: Running Text */}
+            <RunningText messages={[
+                "Top Donator: Sultan_Budi - Rp 5.000.000",
+                "Recent Sub: Siti_G (Prime)",
+                "Don't forget to follow and subscribe!",
+                "Join Discord for updates."
+            ]} />
         </div>
     );
 }

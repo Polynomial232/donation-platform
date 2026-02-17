@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
+const nextConfig = {
   images: {
     remotePatterns: [
       {
@@ -24,6 +24,15 @@ const nextConfig: NextConfig = {
         hostname: "i.imgur.com",
       }
     ],
+  },
+  serverRuntimeConfig: {
+    API_SECRET_KEY: process.env.API_SECRET_KEY,
+  },
+  publicRuntimeConfig: {
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
+    NEXT_PUBLIC_APP_DESCRIPTION: process.env.NEXT_PUBLIC_APP_DESCRIPTION,
+    NODE_ENV: process.env.NODE_ENV,
   },
 };
 
