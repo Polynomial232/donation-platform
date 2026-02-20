@@ -17,8 +17,8 @@ export default function AlertOverlayPage() {
         message: "Check out this awesome song!",
         media: {
           type: "youtube",
-          url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" // Rick Roll for testing :D
-        }
+          url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", // Rick Roll for testing :D
+        },
       });
       // }
     }, 15000);

@@ -9,29 +9,40 @@ export default function ActivityPage() {
 
         <div className="space-y-4">
           <Card className="p-4 border-none shadow-sm flex gap-4 items-start">
-            <div className="bg-red-100 p-2 rounded-full text-red-600"><Heart size={20} fill="currentColor" /></div>
+            <div className="bg-red-100 p-2 rounded-full text-red-600">
+              <Heart size={20} fill="currentColor" />
+            </div>
             <div>
-              <p className="text-sm text-slate-800"><span className="font-bold">Windah Basudara</span> liked your donation message.</p>
+              <p className="text-sm text-slate-800">
+                <span className="font-bold">Windah Basudara</span> liked your donation message.
+              </p>
               <p className="text-xs text-slate-400 font-bold mt-1">2 hours ago</p>
             </div>
           </Card>
           <Card className="p-4 border-none shadow-sm flex gap-4 items-start">
-            <div className="bg-blue-100 p-2 rounded-full text-blue-600"><PlayCircle size={20} /></div>
+            <div className="bg-blue-100 p-2 rounded-full text-blue-600">
+              <PlayCircle size={20} />
+            </div>
             <div>
-              <p className="text-sm text-slate-800"><span className="font-bold">GadgetIn</span> requested media is playing now.</p>
+              <p className="text-sm text-slate-800">
+                <span className="font-bold">GadgetIn</span> requested media is playing now.
+              </p>
               <p className="text-xs text-slate-400 font-bold mt-1">5 hours ago</p>
             </div>
           </Card>
           <Card className="p-4 border-none shadow-sm flex gap-4 items-start">
-            <div className="bg-[var(--color-pastel-purple)] p-2 rounded-full text-[var(--color-deep-purple)]"><Bell size={20} /></div>
+            <div className="bg-[var(--color-pastel-purple)] p-2 rounded-full text-[var(--color-deep-purple)]">
+              <Bell size={20} />
+            </div>
             <div>
-              <p className="text-sm text-slate-800">System update: New payment method available (ShopeePay).</p>
+              <p className="text-sm text-slate-800">
+                System update: New payment method available (ShopeePay).
+              </p>
               <p className="text-xs text-slate-400 font-bold mt-1">1 day ago</p>
             </div>
           </Card>
         </div>
       </div>
-
     </main>
   );
 }

@@ -47,10 +47,13 @@ export function Alert({ event, duration = 10000, onComplete }: AlertProps) {
   const playerRef = useRef(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShow(false);
-      setTimeout(() => onComplete?.(), 500);
-    }, duration + (event.media ? 10000 : 0)); // Give more time for media
+    const timer = setTimeout(
+      () => {
+        setShow(false);
+        setTimeout(() => onComplete?.(), 500);
+      },
+      duration + (event.media ? 10000 : 0)
+    ); // Give more time for media
     return () => clearTimeout(timer);
   }, [duration, onComplete, event.media]);
 
@@ -60,14 +63,14 @@ export function Alert({ event, duration = 10000, onComplete }: AlertProps) {
       y: 0,
       opacity: 1,
       scale: 1,
-      transition: { type: "spring", stiffness: 300, damping: 25 }
+      transition: { type: "spring", stiffness: 300, damping: 25 },
     },
     exit: {
       y: 20,
       opacity: 0,
       scale: 0.95,
-      transition: { duration: 0.3 }
-    }
+      transition: { duration: 0.3 },
+    },
   };
 
   const colors = {
@@ -92,25 +95,39 @@ export function Alert({ event, duration = 10000, onComplete }: AlertProps) {
 
   const getEventLabel = () => {
     switch (event.type) {
-      case 'donation': return 'DUKUNGAN';
-      case 'subscription': return 'BERLANGGANAN';
-      case 'follow': return 'FOLLOW BARU';
-      case 'raid': return 'RAID';
-      case 'bits': return 'BITS';
-      case 'share': return 'MEDIA SHARE';
-      default: return 'EVENT';
+      case "donation":
+        return "DUKUNGAN";
+      case "subscription":
+        return "BERLANGGANAN";
+      case "follow":
+        return "FOLLOW BARU";
+      case "raid":
+        return "RAID";
+      case "bits":
+        return "BITS";
+      case "share":
+        return "MEDIA SHARE";
+      default:
+        return "EVENT";
     }
   };
 
   const getEventValue = () => {
     switch (event.type) {
-      case 'donation': return `IDR ${event.amount?.toLocaleString('id-ID') || 0} `;
-      case 'subscription': return `${event.months} Bulan`;
-      case 'bits': return `${event.amount} Bits`;
-      case 'raid': return `${event.count} Viewers`;
-      case 'follow': return '';
-      case 'share': return '';
-      default: return '';
+      case "donation":
+        return `IDR ${event.amount?.toLocaleString("id-ID") || 0} `;
+      case "subscription":
+        return `${event.months} Bulan`;
+      case "bits":
+        return `${event.amount} Bits`;
+      case "raid":
+        return `${event.count} Viewers`;
+      case "follow":
+        return "";
+      case "share":
+        return "";
+      default:
+        return "";
     }
   };
 
@@ -122,7 +139,7 @@ export function Alert({ event, duration = 10000, onComplete }: AlertProps) {
     <AnimatePresence>
       {show && (
         <motion.div
-          className="relative w-full max-w-2xl bg-white rounded-[2rem] shadow-2xl overflow-hidden font-sans mx-auto"
+          className="relative w-full max-w-2xl bg-white rounded-[2rem] overflow-hidden font-sans mx-auto"
           variants={variants}
           initial="hidden"
           animate="visible"
@@ -131,15 +148,19 @@ export function Alert({ event, duration = 10000, onComplete }: AlertProps) {
           {/* Media Section (Dominant) */}
           <div className="relative h-[480px] bg-gray-900 w-full overflow-hidden group">
             {/* "New Media" Badge */}
-            <div className="absolute top-4 left-4 z-20 bg-white/90 backdrop-blur px-3 py-1 rounded-full shadow-sm flex items-center gap-1.5 pointer-events-none">
-              <span className="text-[10px] font-bold text-gray-900 uppercase tracking-wider">New</span>
+            <div className="absolute top-4 left-4 z-20 bg-white/90 backdrop-blur px-3 py-1 rounded-full flex items-center gap-1.5 pointer-events-none">
+              <span className="text-[10px] font-bold text-gray-900 uppercase tracking-wider">
+                New
+              </span>
               <Sparkles className="w-3 h-3 text-yellow-500 fill-yellow-500" />
             </div>
 
             {/* Pattern Text Overlay (Only if no media playing) */}
             {!playing && (
               <div className="absolute inset-0 opacity-10 flex flex-col justify-center items-center pointer-events-none select-none overflow-hidden z-10">
-                <span className="text-9xl font-black text-white rotate-[-15deg] whitespace-nowrap">MEDIA</span>
+                <span className="text-9xl font-black text-white rotate-[-15deg] whitespace-nowrap">
+                  MEDIA
+                </span>
               </div>
             )}
 
@@ -161,8 +182,8 @@ export function Alert({ event, duration = 10000, onComplete }: AlertProps) {
                   controls={false}
                   config={{
                     youtube: {
-                      playerVars: { showinfo: 0, controls: 0, modestbranding: 1 }
-                    }
+                      playerVars: { showinfo: 0, controls: 0, modestbranding: 1 },
+                    },
                   }}
                 />
               </div>
@@ -179,7 +200,7 @@ export function Alert({ event, duration = 10000, onComplete }: AlertProps) {
                 className="absolute inset-0 flex items-center justify-center z-20 cursor-pointer"
                 onClick={handlePlayMedia}
               >
-                <div className="w-20 h-20 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/40 shadow-2xl group-hover:scale-110 transition-transform">
+                <div className="w-20 h-20 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/40 group-hover:scale-110 transition-transform">
                   <Play className="w-8 h-8 text-white ml-2 fill-white" />
                 </div>
               </div>
@@ -189,10 +210,17 @@ export function Alert({ event, duration = 10000, onComplete }: AlertProps) {
           {/* Minimalist Content Section */}
           <div className="relative z-10 bg-white -mt-6 rounded-t-[2rem] px-8 pb-6 pt-0 flex flex-col items-center">
             {/* User Icon (Floating overlapping) */}
-            <div className={cn(
-              "w-20 h-20 rounded-2xl flex items-center justify-center shadow-xl -mt-10 mb-3 bg-white p-1.5 transform rotate-3",
-            )}>
-              <div className={cn("w-full h-full rounded-xl flex items-center justify-center", currentTheme.accent)}>
+            <div
+              className={cn(
+                "w-20 h-20 rounded-2xl flex items-center justify-center -mt-10 mb-3 bg-white p-1.5 transform rotate-3"
+              )}
+            >
+              <div
+                className={cn(
+                  "w-full h-full rounded-xl flex items-center justify-center",
+                  currentTheme.accent
+                )}
+              >
                 {icons[event.type]}
               </div>
             </div>
@@ -200,15 +228,19 @@ export function Alert({ event, duration = 10000, onComplete }: AlertProps) {
             <div className="w-full text-center space-y-1">
               {/* Username & Event Inline */}
               <div className="flex flex-col items-center justify-center gap-1">
-                <h2 className="text-3xl font-black text-slate-900 leading-none">
-                  {event.user}
-                </h2>
+                <h2 className="text-3xl font-black text-slate-900 leading-none">{event.user}</h2>
                 <div className="flex items-center gap-2 mt-1">
                   <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
                     {getEventLabel()}
                   </span>
                   {getEventValue() && (
-                    <div className={cn("px-3 py-0.5 rounded-full text-sm font-bold", currentTheme.bg, currentTheme.text)}>
+                    <div
+                      className={cn(
+                        "px-3 py-0.5 rounded-full text-sm font-bold",
+                        currentTheme.bg,
+                        currentTheme.text
+                      )}
+                    >
                       {getEventValue()}
                     </div>
                   )}
@@ -220,9 +252,7 @@ export function Alert({ event, duration = 10000, onComplete }: AlertProps) {
             {event.message && (
               <div className="mt-4 w-full">
                 <div className="bg-slate-50 border-l-4 border-slate-200 pl-4 py-2 pr-2 rounded-r-xl">
-                  <p className="text-base font-medium text-slate-700 italic">
-                    "{event.message}"
-                  </p>
+                  <p className="text-base font-medium text-slate-700 italic">"{event.message}"</p>
                 </div>
                 <div className="mt-2 text-right">
                   <span className="text-xs font-bold text-slate-400 flex items-center justify-end gap-1">

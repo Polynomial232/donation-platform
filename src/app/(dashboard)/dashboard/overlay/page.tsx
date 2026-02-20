@@ -2,23 +2,45 @@
 
 import Link from "next/link";
 import {
-  Bell, Flag, Trophy, Type, List, Target, Clock, PieChart, QrCode, Grid, Volume2, Sparkles, Sliders
+  Bell,
+  Flag,
+  Trophy,
+  Type,
+  List,
+  Target,
+  Clock,
+  PieChart,
+  QrCode,
+  Grid,
+  Volume2,
+  Sparkles,
+  Sliders,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Goal } from "@/components/overlay/Goal";
 
 const OVERLAY_TYPES = [
-  { id: "alert", label: "Notification Box", icon: Bell, description: "Donation, Sub, Follow alerts" },
+  {
+    id: "alert",
+    label: "Notification Box",
+    icon: Bell,
+    description: "Donation, Sub, Follow alerts [UNDONE]",
+  },
   { id: "goal", label: "Target / Goal", icon: Flag, description: "Donation bar progress" },
   { id: "leaderboard", label: "Leaderboard", icon: Trophy, description: "Top donators list" },
-  { id: "running-text", label: "Running Text", icon: Type, description: "Ticker for recent events" },
-  { id: "event-feed", label: "Event Feed", icon: List, description: "Stream activity log" },
+  {
+    id: "running-text",
+    label: "Running Text",
+    icon: Type,
+    description: "Ticker for recent events [UNDONE]",
+  },
+  // { id: "event-feed", label: "Event Feed", icon: List, description: "Stream activity log" },
   { id: "milestone", label: "Milestone", icon: Target, description: "Timeline of achievements" },
-  { id: "subathon", label: "Subathon", icon: Clock, description: "Countdown timer" },
-  { id: "poll", label: "Polling", icon: PieChart, description: "Live voting results" },
+  { id: "donathon", label: "Donathon", icon: Clock, description: "Countdown timer" },
+  // { id: "poll", label: "Polling", icon: PieChart, description: "Live voting results" },
   { id: "qr", label: "QR Code", icon: QrCode, description: "Scan to donate" },
   { id: "soundboard", label: "Soundboard", icon: Volume2, description: "Visualizer for sounds" },
-  { id: "gacha", label: "Gacha", icon: Sparkles, description: "Interactive gacha game" },
+  // { id: "gacha", label: "Gacha", icon: Sparkles, description: "Interactive gacha game" },
 ];
 
 export default function OverlaySettingsIndexPage() {
@@ -27,13 +49,18 @@ export default function OverlaySettingsIndexPage() {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-extrabold text-slate-900">Overlay Settings</h2>
-          <p className="text-slate-500 font-medium">Select an overlay component to configure.</p>
+          <p className="text-slate-500 font-medium">
+            Select an overlay component to configure. [DO CUSTOMIZE COLOR]{" "}
+          </p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {OVERLAY_TYPES.map((type) => (
-          <Card key={type.id} className="p-6 border-none shadow-sm hover:shadow-lg transition-all border border-transparent hover:border-[var(--color-accent-purple)] group relative overflow-hidden">
+          <Card
+            key={type.id}
+            className="p-6 border-none shadow-sm hover:shadow-lg transition-all border border-transparent hover:border-[var(--color-accent-purple)] group relative overflow-hidden"
+          >
             <Link href={`/dashboard/overlay/${type.id}`} className="block">
               <div className="flex items-start justify-between mb-4 relative z-10">
                 <div className="p-3 bg-slate-50 rounded-xl group-hover:bg-[var(--color-pastel-purple)] group-hover:text-[var(--color-deep-purple)] transition-colors text-slate-500">

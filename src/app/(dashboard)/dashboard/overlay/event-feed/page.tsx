@@ -5,7 +5,7 @@ import { EventFeed } from "@/components/overlay/EventFeed";
 import OverlaySettingsTemplate from "@/components/dashboard/OverlaySettingsTemplate";
 
 const MOCK_EVENTS = [
-  { id: "1", user: "Budi01", action: "donated Rp 20.000", time: "2m ago" },
+  { id: "1", user: "Budi01", action: "donated IDR 20.000", time: "2m ago" },
   { id: "2", user: "Siti_G", action: "subscribed (Prime)", time: "5m ago" },
   { id: "3", user: "Udin_World", action: "followed", time: "10m ago" },
 ];

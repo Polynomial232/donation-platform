@@ -1,53 +1,76 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useForm, FormProvider } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import { DonationForm } from "./DonationForm";
 import { MediaShareForm } from "./MediaShareForm";
 import { SoundList } from "./SoundList";
 import { PaymentMethods } from "./PaymentMethods";
-import { PowerUpEffects } from "./PowerUpEffects";
+
+const donationSchema = z.object({
+  senderName: z.string().min(1, "Nama pengirim diperlukan"),
+  email: z.string().email("Email tidak valid").optional().or(z.literal("")),
+  message: z.string().optional(),
+  amount: z.number().min(1, "Jumlah minimal IDR 1"),
+  isEmailPrivate: z.boolean(),
+  activeTab: z.enum(["gift", "sound", "auction"]),
+});
+
+export type DonationFormValues = z.infer<typeof donationSchema>;
 
 export function DonationWrapper() {
-    const [activeTab, setActiveTab] = useState<"gift" | "sound" | "auction">("gift");
-    const [amount, setAmount] = useState<number>(5000);
+  const methods = useForm<DonationFormValues>({
+    resolver: zodResolver(donationSchema),
+    defaultValues: {
+      activeTab: "gift",
+      amount: 10000,
+      isEmailPrivate: false,
+      senderName: "",
+      email: "",
+      message: "",
+    },
+  });
 
-    // Listen for custom events from other widgets (e.g., VipPerksWidget)
-    useEffect(() => {
-        const handleUpdateAmount = (event: CustomEvent<number>) => {
-            setAmount(event.detail);
-        };
+  const activeTab = methods.watch("activeTab");
+  const amount = methods.watch("amount");
 
-        window.addEventListener('update-donation-amount', handleUpdateAmount as EventListener);
+  // Listen for custom events from other widgets (e.g., VipPerksWidget)
+  useEffect(() => {
+    const handleUpdateAmount = (event: CustomEvent<number>) => {
+      methods.setValue("amount", event.detail);
+    };
 
-        return () => {
-            window.removeEventListener('update-donation-amount', handleUpdateAmount as EventListener);
-        };
-    }, []);
+    window.addEventListener("update-donation-amount", handleUpdateAmount as EventListener);
 
-    return (
-        <div id="donation-form" className="space-y-6">
-            <DonationForm
-                activeTab={activeTab}
-                setActiveTab={setActiveTab}
-                amount={amount}
-                setAmount={setAmount}
+    return () => {
+      window.removeEventListener("update-donation-amount", handleUpdateAmount as EventListener);
+    };
+  }, [methods]);
+
+  return (
+    <FormProvider {...methods}>
+      <div id="donation-form" className="space-y-6">
+        <DonationForm />
+
+        {activeTab === "gift" && (
+          <div className="animate-in fade-in slide-in-from-top-4 duration-300">
+            <MediaShareForm />
+          </div>
+        )}
+
+        {activeTab === "sound" && (
+          <div className="animate-in fade-in slide-in-from-top-4 duration-300">
+            <SoundList
+              selectedAmount={amount}
+              onSelectAmount={(amt) => methods.setValue("amount", amt)}
             />
+          </div>
+        )}
 
-            {/* <PowerUpEffects /> */}
-
-            {activeTab === "gift" && (
-                <div className="animate-in fade-in slide-in-from-top-4 duration-300">
-                    <MediaShareForm />
-                </div>
-            )}
-
-            {activeTab === "sound" && (
-                <div className="animate-in fade-in slide-in-from-top-4 duration-300">
-                    <SoundList selectedAmount={amount} onSelectAmount={setAmount} />
-                </div>
-            )}
-
-            <PaymentMethods amount={amount} />
-        </div>
-    );
+        <PaymentMethods amount={amount} />
+      </div>
+    </FormProvider>
+  );
 }

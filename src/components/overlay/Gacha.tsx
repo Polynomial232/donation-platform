@@ -30,7 +30,7 @@ export function Gacha({ onOpen }: GachaProps) {
             exit={{ opacity: 0 }}
             onAnimationComplete={() => setTimeout(() => setResult(null), 3000)}
           >
-            <div className="bg-yellow-400 text-slate-900 font-black px-6 py-2 rounded-full shadow-xl border-4 border-white whitespace-nowrap">
+            <div className="bg-yellow-400 text-slate-900 font-black px-6 py-2 rounded-full border-4 border-white whitespace-nowrap">
               {result}
             </div>
           </motion.div>
@@ -41,7 +41,7 @@ export function Gacha({ onOpen }: GachaProps) {
         onClick={handlePull}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className="bg-gradient-to-br from-pink-500 to-purple-600 p-4 rounded-full shadow-lg border-4 border-white text-white relative overflow-hidden group"
+        className="bg-gradient-to-br from-pink-500 to-purple-600 p-4 rounded-full border-4 border-white text-white relative overflow-hidden group"
       >
         <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform" />
         {isThinking ? (

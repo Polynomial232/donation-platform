@@ -33,27 +33,27 @@ export function Soundboard({ activeSound, style }: SoundboardProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.9 }}
-      className="flex items-center gap-3 backdrop-blur-md px-4 py-2 rounded-full shadow-lg border"
+      className="flex items-center gap-3 backdrop-blur-md px-4 py-2 rounded-full border"
       style={{
         backgroundColor,
         color: textColor,
         borderColor,
       }}
     >
-      <motion.div
-        animate={{ scale: [1, 1.2, 1] }}
-        transition={{ repeat: Infinity, duration: 0.5 }}
-      >
+      <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ repeat: Infinity, duration: 0.5 }}>
         <Volume2 size={20} style={{ color: accentColor }} />
       </motion.div>
       <div className="flex flex-col text-sm leading-tight">
         <span className="font-medium">
-          Playing: <span className="font-bold" style={{ color: accentColor }}>{activeSound.name}</span>
+          Playing:{" "}
+          <span className="font-bold" style={{ color: accentColor }}>
+            {activeSound.name}
+          </span>
         </span>
         {(activeSound.sender || activeSound.amount) && (
           <span className="text-xs opacity-80">
             {activeSound.sender && <span>by {activeSound.sender} </span>}
-            {activeSound.amount && <span>(IDR {activeSound.amount.toLocaleString('id-ID')})</span>}
+            {activeSound.amount && <span>(IDR {activeSound.amount.toLocaleString("id-ID")})</span>}
           </span>
         )}
       </div>
@@ -70,7 +70,7 @@ export function Soundboard({ activeSound, style }: SoundboardProps) {
               repeat: Infinity,
               duration: 0.4,
               delay: i * 0.1,
-              repeatType: "reverse"
+              repeatType: "reverse",
             }}
           />
         ))}

@@ -14,7 +14,7 @@ interface PollProps {
 
 export function Poll({ question, options, totalVotes }: PollProps) {
   return (
-    <div className="bg-white/95 backdrop-blur-md rounded-xl p-6 shadow-2xl w-80 border-2 border-slate-200">
+    <div className="bg-white/95 backdrop-blur-md rounded-xl p-6 w-80 border-2 border-slate-200">
       <h3 className="font-bold text-lg text-slate-800 mb-4 text-center">{question}</h3>
 
       <div className="space-y-3">

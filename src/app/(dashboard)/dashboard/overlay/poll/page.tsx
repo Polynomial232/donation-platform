@@ -21,9 +21,7 @@ export default function PollOverlaySettingsPage() {
       description="Engage your audience with live polls."
       icon={<PieChart size={24} />}
       type="poll"
-      previewContent={
-        <Poll {...MOCK_POLL} />
-      }
+      previewContent={<Poll {...MOCK_POLL} />}
     />
   );
 }
