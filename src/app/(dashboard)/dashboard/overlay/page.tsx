@@ -28,12 +28,12 @@ const OVERLAY_TYPES = [
   },
   { id: "goal", label: "Target / Goal", icon: Flag, description: "Donation bar progress" },
   { id: "leaderboard", label: "Leaderboard", icon: Trophy, description: "Top donators list" },
-  {
-    id: "running-text",
-    label: "Running Text",
-    icon: Type,
-    description: "Ticker for recent events [UNDONE]",
-  },
+  // {
+  //   id: "running-text",
+  //   label: "Running Text",
+  //   icon: Type,
+  //   description: "Ticker for recent events [UNDONE]",
+  // },
   // { id: "event-feed", label: "Event Feed", icon: List, description: "Stream activity log" },
   { id: "milestone", label: "Milestone", icon: Target, description: "Timeline of achievements" },
   { id: "donathon", label: "Donathon", icon: Clock, description: "Countdown timer" },

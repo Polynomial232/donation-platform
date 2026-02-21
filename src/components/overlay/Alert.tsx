@@ -27,11 +27,19 @@ export type OverlayEvent = {
   tier?: string;
   count?: number; // for raid/bits
   media?: {
-    type: "youtube" | "video";
+    type: "youtube" | "video" | "image";
     url: string;
     start?: number;
     end?: number;
   };
+  unit?: {
+    name: string;
+    value: number;
+    icon?: string;
+    count?: number;
+  };
+  soundUrl?: string;
+  volume?: number;
 };
 
 interface AlertProps {
@@ -45,8 +53,16 @@ export function Alert({ event, duration = 10000, onComplete }: AlertProps) {
   const [playing, setPlaying] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const playerRef = useRef(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
+    // Play notification sound if provided
+    if (event.soundUrl) {
+      const audio = new Audio(event.soundUrl);
+      audio.volume = (event.volume ?? 100) / 100;
+      audio.play().catch((e) => console.error("Sound play failed", e));
+    }
+
     const timer = setTimeout(
       () => {
         setShow(false);
@@ -55,7 +71,7 @@ export function Alert({ event, duration = 10000, onComplete }: AlertProps) {
       duration + (event.media ? 10000 : 0)
     ); // Give more time for media
     return () => clearTimeout(timer);
-  }, [duration, onComplete, event.media]);
+  }, [duration, onComplete, event.media, event.soundUrl, event.volume]);
 
   const variants = {
     hidden: { y: 50, opacity: 0, scale: 0.9 },
@@ -63,7 +79,7 @@ export function Alert({ event, duration = 10000, onComplete }: AlertProps) {
       y: 0,
       opacity: 1,
       scale: 1,
-      transition: { type: "spring", stiffness: 300, damping: 25 },
+      transition: { type: "spring" as const, stiffness: 300, damping: 25 },
     },
     exit: {
       y: 20,
@@ -115,6 +131,9 @@ export function Alert({ event, duration = 10000, onComplete }: AlertProps) {
   const getEventValue = () => {
     switch (event.type) {
       case "donation":
+        if (event.unit && event.unit.count) {
+          return `${event.unit.count} ${event.unit.name}`;
+        }
         return `IDR ${event.amount?.toLocaleString("id-ID") || 0} `;
       case "subscription":
         return `${event.months} Bulan`;
@@ -139,7 +158,7 @@ export function Alert({ event, duration = 10000, onComplete }: AlertProps) {
     <AnimatePresence>
       {show && (
         <motion.div
-          className="relative w-full max-w-2xl bg-white rounded-[2rem] overflow-hidden font-sans mx-auto"
+          className="relative w-full max-w-2xl bg-white rounded-[2rem] overflow-hidden font-sans mx-auto shadow-2xl"
           variants={variants}
           initial="hidden"
           animate="visible"
@@ -156,53 +175,71 @@ export function Alert({ event, duration = 10000, onComplete }: AlertProps) {
             </div>
 
             {/* Pattern Text Overlay (Only if no media playing) */}
-            {!playing && (
-              <div className="absolute inset-0 opacity-10 flex flex-col justify-center items-center pointer-events-none select-none overflow-hidden z-10">
-                <span className="text-9xl font-black text-white rotate-[-15deg] whitespace-nowrap">
-                  MEDIA
-                </span>
-              </div>
-            )}
-
-            {/* YouTube Player */}
+            {/* Media Rendering */}
             {event.media && (
-              <div className="absolute inset-0 z-0 bg-black">
-                <ReactPlayer
-                  ref={playerRef}
-                  url={event.media.url}
-                  width="100%"
-                  height="100%"
-                  playing={playing}
-                  onReady={() => {
-                    console.log("Player Ready");
-                    setIsReady(true);
-                  }}
-                  onEnded={() => setPlaying(false)}
-                  onError={(e: any) => console.error("Player Error:", e)}
-                  controls={false}
-                  config={{
-                    youtube: {
-                      playerVars: { showinfo: 0, controls: 0, modestbranding: 1 },
-                    },
-                  }}
-                />
-              </div>
-            )}
-
-            {/* Image Placeholder OVERLAY (Only if no media playing) */}
-            {!playing && (
-              <div className="absolute inset-0 bg-gradient-to-b from-gray-800 to-gray-900 z-10" />
-            )}
-
-            {/* Play Button Overlay */}
-            {!playing && isReady && event.media && (
               <div
-                className="absolute inset-0 flex items-center justify-center z-20 cursor-pointer"
-                onClick={handlePlayMedia}
+                className="absolute inset-0 z-0 flex items-center justify-center overflow-hidden"
+                style={{
+                  backgroundColor: "#ffffff",
+                  backgroundImage: `
+                    linear-gradient(45deg, #f5f5f5 25%, transparent 25%),
+                    linear-gradient(-45deg, #f5f5f5 25%, transparent 25%),
+                    linear-gradient(45deg, transparent 75%, #f5f5f5 75%),
+                    linear-gradient(-45deg, transparent 75%, #f5f5f5 75%)
+                  `,
+                  backgroundSize: "20px 20px",
+                  backgroundPosition: "0 0, 0 10px, 10px -10px, -10px 0px",
+                }}
               >
-                <div className="w-20 h-20 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/40 group-hover:scale-110 transition-transform">
-                  <Play className="w-8 h-8 text-white ml-2 fill-white" />
-                </div>
+                {event.media.type === "image" ? (
+                  <motion.img
+                    src={event.media.url}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.4 }}
+                    onLoad={() => setIsReady(true)}
+                    className="w-full h-full object-contain relative z-10"
+                    alt="notification-media"
+                  />
+                ) : (
+                  <div className="relative z-10 w-full h-full">
+                    {(() => {
+                      const Player = ReactPlayer as any;
+                      return (
+                        <Player
+                          ref={playerRef}
+                          url={event.media.url}
+                          width="100%"
+                          height="100%"
+                          playing={playing}
+                          onReady={() => {
+                            console.log("Player Ready");
+                            setIsReady(true);
+                          }}
+                          onEnded={() => setPlaying(false)}
+                          onError={(e: any) => console.error("Player Error:", e)}
+                          controls={false}
+                          config={{
+                            youtube: {
+                              playerVars: { controls: 0, modestbranding: 1 },
+                            },
+                          }}
+                        />
+                      );
+                    })()}
+
+                    {!playing && isReady && (
+                      <div
+                        className="absolute inset-0 flex items-center justify-center z-20 cursor-pointer bg-black/20"
+                        onClick={handlePlayMedia}
+                      >
+                        <div className="w-20 h-20 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/40 hover:scale-110 transition-transform">
+                          <Play className="w-8 h-8 text-white ml-2 fill-white" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -212,16 +249,20 @@ export function Alert({ event, duration = 10000, onComplete }: AlertProps) {
             {/* User Icon (Floating overlapping) */}
             <div
               className={cn(
-                "w-20 h-20 rounded-2xl flex items-center justify-center -mt-10 mb-3 bg-white p-1.5 transform rotate-3"
+                "w-20 h-20 rounded-2xl flex items-center justify-center -mt-10 mb-3 bg-white p-1.5 transform rotate-3 shadow-lg"
               )}
             >
               <div
                 className={cn(
-                  "w-full h-full rounded-xl flex items-center justify-center",
+                  "w-full h-full rounded-xl flex items-center justify-center overflow-hidden",
                   currentTheme.accent
                 )}
               >
-                {icons[event.type]}
+                {event.unit?.icon ? (
+                  <img src={event.unit.icon} className="w-12 h-12 object-contain" alt="unit" />
+                ) : (
+                  icons[event.type]
+                )}
               </div>
             </div>
 
@@ -236,7 +277,7 @@ export function Alert({ event, duration = 10000, onComplete }: AlertProps) {
                   {getEventValue() && (
                     <div
                       className={cn(
-                        "px-3 py-0.5 rounded-full text-sm font-bold",
+                        "px-3 py-0.5 rounded-full text-sm font-bold flex items-center gap-2",
                         currentTheme.bg,
                         currentTheme.text
                       )}
@@ -253,11 +294,6 @@ export function Alert({ event, duration = 10000, onComplete }: AlertProps) {
               <div className="mt-4 w-full">
                 <div className="bg-slate-50 border-l-4 border-slate-200 pl-4 py-2 pr-2 rounded-r-xl">
                   <p className="text-base font-medium text-slate-700 italic">"{event.message}"</p>
-                </div>
-                <div className="mt-2 text-right">
-                  <span className="text-xs font-bold text-slate-400 flex items-center justify-end gap-1">
-                    Semangat! <span className="text-sm">🔥</span>
-                  </span>
                 </div>
               </div>
             )}
