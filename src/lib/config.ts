@@ -1,13 +1,9 @@
-import getConfig from "next/config";
-
-const { serverRuntimeConfig, publicRuntimeConfig } = getConfig() || {};
-
-const config: Record<string, any> = {
-  API_URL: publicRuntimeConfig?.NEXT_PUBLIC_API_URL,
-  API_SECRET_KEY: serverRuntimeConfig?.API_SECRET_KEY,
-  APP_NAME: publicRuntimeConfig?.NEXT_PUBLIC_APP_NAME,
-  APP_DESCRIPTION: publicRuntimeConfig?.NEXT_PUBLIC_APP_DESCRIPTION,
-  DEBUG: publicRuntimeConfig?.NODE_ENV !== "production",
+const config = {
+  API_URL: process.env.NEXT_PUBLIC_API_URL || undefined,
+  API_SECRET_KEY: process.env.API_SECRET_KEY as string | undefined,
+  APP_NAME: process.env.NEXT_PUBLIC_APP_NAME || undefined,
+  APP_DESCRIPTION: process.env.NEXT_PUBLIC_APP_DESCRIPTION || undefined,
+  DEBUG: process.env.NODE_ENV !== "production",
 };
 
 export default config;
