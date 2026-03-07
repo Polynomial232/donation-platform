@@ -12,22 +12,34 @@ import { PinnedWidget } from "@/components/donation/PinnedWidget";
 import { LeaderboardWidget } from "@/components/donation/LeaderboardWidget";
 import { RecentActivityWidget } from "@/components/donation/RecentActivityWidget";
 import { AchievementsWidget } from "@/components/donation/AchievementsWidget";
-import { CommunityQuestWidget } from "@/components/donation/CommunityQuestWidget";
+import { GoalsWidget } from "@/components/donation/GoalsWidget";
 import { Card } from "@/components/ui/card";
 
 import { discoveryService } from "@/services/discovery";
 import { CreatorDetailResponse, CreatorSection } from "@/types/discovery";
 
+function isSectionVisible(section: CreatorSection): boolean {
+  if (!section.isEnabled) return false;
+
+  const { data } = section;
+  if (!data) return false;
+  if (Array.isArray(data) && data.length === 0) return false;
+
+  return true;
+}
+
 function SectionRenderer({ section }: { section: CreatorSection }) {
-  if (!section.isEnabled) return null;
+  if (!isSectionVisible(section)) return null;
 
   switch (section.type) {
-    case "COMMUNITY_QUEST":
-      return <CommunityQuestWidget data={section.data} />;
+    case "GOALS":
+      return <GoalsWidget data={section.data} title={section.title} />;
     case "ACHIEVEMENTS":
       return <AchievementsWidget data={section.data} />;
     case "PINNED_WIDGET":
       return <PinnedWidget data={section.data} />;
+    case "RECENT_ACTIVITY":
+      return <DonationHistory data={section.data} />;
     case "TOP_SUPPORTERS":
       return <LeaderboardWidget data={section.data} />;
     case "CUSTOM_CONTENT":
@@ -58,18 +70,34 @@ export default function CreatorPage() {
 
   const data = response?.data;
 
-  // Split into left and right based on some logic (e.g. type)
-  const recentActivityData = useMemo(() => {
-    return data?.sections.find((s) => s.type === "RECENT_ACTIVITY")?.data;
-  }, [data?.sections]);
+  const LEFT_SECTION_TYPES = ["GOALS"] as const;
+
+  const RIGHT_SECTION_TYPES = [
+    "ACHIEVEMENTS",
+    "PINNED_WIDGET",
+    "CUSTOM_CONTENT",
+    "TOP_SUPPORTERS",
+  ] as const;
 
   const { leftSections, rightSections } = useMemo(() => {
     if (!data?.sections) return { leftSections: [], rightSections: [] };
 
     return {
-      leftSections: data.sections.filter((s) => ["COMMUNITY_QUEST"].includes(s.type)),
-      rightSections: data.sections.filter((s) => !["COMMUNITY_QUEST"].includes(s.type)),
+      leftSections: data.sections.filter((s) =>
+        (LEFT_SECTION_TYPES as readonly string[]).includes(s.type)
+      ),
+      rightSections: data.sections.filter((s) =>
+        (RIGHT_SECTION_TYPES as readonly string[]).includes(s.type)
+      ),
     };
+  }, [data?.sections]);
+
+  const hasVisibleRightSections = useMemo(() => {
+    return rightSections.some(isSectionVisible);
+  }, [rightSections]);
+
+  const recentActivitySection = useMemo(() => {
+    return data?.sections.find((s) => s.type === "RECENT_ACTIVITY");
   }, [data?.sections]);
 
   if (isLoading) {
@@ -91,10 +119,12 @@ export default function CreatorPage() {
 
   return (
     <main className="min-h-screen bg-[var(--color-off-white)] pb-12">
-      <div className="max-w-6xl mx-auto px-4 mt-6">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* LEFT/CENTER COLUMN (Main Content) */}
-          <div className="lg:col-span-8 space-y-6">
+      <div className={`mx-auto px-4 pt-6 ${hasVisibleRightSections ? "max-w-6xl" : "max-w-3xl"}`}>
+        <div
+          className={`grid grid-cols-1 gap-8 ${hasVisibleRightSections ? "lg:grid-cols-12" : ""}`}
+        >
+          {/* Main Content Column */}
+          <div className={`space-y-6 ${hasVisibleRightSections ? "lg:col-span-8" : ""}`}>
             <ProfileHeader
               username={profile.username}
               displayName={profile.displayName}
@@ -111,16 +141,21 @@ export default function CreatorPage() {
             ))}
 
             <DonationWrapper settings={settings} soundBoard={soundBoard} />
-            <DonationHistory data={recentActivityData} />
+
+            {/* Recent Activity — rendered below donation form */}
+            {recentActivitySection && isSectionVisible(recentActivitySection) && (
+              <DonationHistory data={recentActivitySection.data} />
+            )}
           </div>
 
-          {/* RIGHT COLUMN (Sidebar) */}
-          <div className="lg:col-span-4 space-y-6">
-            {/* Dynamic Right Sections */}
-            {rightSections.map((section) => (
-              <SectionRenderer key={section.id} section={section} />
-            ))}
-          </div>
+          {/* Right Sidebar — only rendered when visible sections exist */}
+          {hasVisibleRightSections && (
+            <div className="lg:col-span-4 space-y-6">
+              {rightSections.map((section) => (
+                <SectionRenderer key={section.id} section={section} />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </main>

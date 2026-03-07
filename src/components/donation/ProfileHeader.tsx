@@ -44,22 +44,24 @@ export function ProfileHeader({
         </div>
         <div className="mt-3 flex justify-between items-end">
           <div className="flex flex-col gap-1">
-            <div className="flex items-center gap-1.5">
-              <h1 className="text-xl font-extrabold text-slate-900">{displayName || username}</h1>
-              {isVerified && <BadgeCheck className="w-5 h-5 text-blue-500 fill-blue-50" />}
-              {isLive && (
-                <div className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded ml-1 animate-pulse flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
-                  LIVE
-                </div>
-              )}
+            <div className="flex items-center gap-1.5 justify-between">
+              <div className="flex items-center gap-1.5">
+                <h1 className="text-xl font-extrabold text-slate-900">{displayName || username}</h1>
+                {isVerified && <BadgeCheck className="w-5 h-5 text-blue-500 fill-blue-50" />}
+                {isLive && (
+                  <div className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded ml-1 animate-pulse flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
+                    LIVE
+                  </div>
+                )}
+              </div>
+              <Button variant="secondary" size="sm" className="rounded-full text-xs font-bold px-4">
+                Ikuti
+              </Button>
             </div>
             {displayName && <p className="text-xs text-slate-400 font-bold -mt-1">@{username}</p>}
             <p className="text-sm text-slate-500 mt-1 font-medium">{bio}</p>
           </div>
-          <Button variant="secondary" size="sm" className="rounded-full text-xs font-bold px-4">
-            Ikuti
-          </Button>
         </div>
       </div>
     </Card>

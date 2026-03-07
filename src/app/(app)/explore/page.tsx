@@ -182,7 +182,7 @@ function ExploreContent() {
 
           {/* Category Pills */}
           <div className="px-6 pb-4 pt-2">
-            <div className="flex gap-2 overflow-x-auto no-scrollbar">
+            <div className="flex gap-2 overflow-x-auto no-scrollbar py-1 -my-1">
               {categories.map((cat: string) => (
                 <button
                   key={cat}
@@ -392,7 +392,7 @@ function ExploreContent() {
               </section>
 
               {/* All Creators Section (Infinite Scroll) */}
-              <section className="mt-8 px-6 pb-6">
+              <section className="pt-8 px-6 pb-6">
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h2 className="text-lg font-extrabold text-slate-900">All Creators</h2>

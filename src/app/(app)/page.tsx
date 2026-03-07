@@ -5,7 +5,8 @@ import { useEffect } from "react";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import { discoveryService } from "@/services/discovery";
-import { Search, ArrowRight, Zap, ShieldCheck, Gift, Volume2, Gavel } from "lucide-react";
+import Link from "next/link";
+import { Search, ArrowRight, Zap, ShieldCheck, Gift, Volume2, Gavel, Compass } from "lucide-react";
 
 const getIcon = (iconName: string) => {
   switch (iconName) {
@@ -89,6 +90,22 @@ export default function LandingPage() {
             <button className="bg-[var(--color-accent-yellow)] p-3 rounded-2xl hover:bg-[var(--color-pastel-yellow)] transition-colors">
               <ArrowRight className="text-[var(--color-deep-purple)] block" />
             </button>
+          </div>
+
+          <div className="flex items-center justify-center gap-3">
+            <Link
+              href="/explore"
+              className="inline-flex items-center gap-2 bg-[var(--color-deep-purple)] text-white font-bold text-sm px-6 py-3 rounded-full shadow-lg shadow-purple-200 hover:scale-[1.03] active:scale-[0.98] transition-all"
+            >
+              <Compass size={16} />
+              Explore Kreator
+            </Link>
+            <Link
+              href="/register"
+              className="inline-flex items-center gap-2 bg-white text-[var(--color-deep-purple)] font-bold text-sm px-6 py-3 rounded-full shadow-lg shadow-slate-100 border border-slate-200 hover:scale-[1.03] active:scale-[0.98] transition-all"
+            >
+              Register
+            </Link>
           </div>
         </section>
 

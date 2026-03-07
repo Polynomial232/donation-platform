@@ -53,7 +53,7 @@ export interface CreatorProfile {
 export interface CreatorSection {
   id: string;
   type:
-    | "COMMUNITY_QUEST"
+    | "GOALS"
     | "ACHIEVEMENTS"
     | "TOP_SUPPORTERS"
     | "PINNED_WIDGET"

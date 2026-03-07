@@ -1,8 +1,18 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Bell, User, Menu } from "lucide-react";
+import { Bell, User, Menu, LogIn } from "lucide-react";
 
 export function Navbar() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+  }, []);
+
   return (
     <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg px-6 py-4 flex justify-between items-center border-b border-slate-100/50">
       <Link href="/" className="flex items-center gap-2">
@@ -13,7 +23,7 @@ export function Navbar() {
       </Link>
 
       {/* Desktop Nav */}
-      <div className="hidden md:flex items-center gap-8 text-sm font-bold text-slate-500">
+      {/* <div className="hidden md:flex items-center gap-8 text-sm font-bold text-slate-500">
         <Link href="/explore" className="hover:text-[var(--color-deep-purple)] transition-colors">
           Explore
         </Link>
@@ -23,25 +33,34 @@ export function Navbar() {
         <Link href="/activity" className="hover:text-[var(--color-deep-purple)] transition-colors">
           Activity
         </Link>
-      </div>
+      </div> */}
 
       <div className="flex items-center gap-3">
         <div className="hidden md:flex gap-3">
-          <Link href="/alerts">
+          {/* <Link href="/alerts">
             <Button variant="ghost" size="sm" className="font-bold text-xs p-2">
               <Bell size={20} />
             </Button>
-          </Link>
-          <Link href="/profile">
+          </Link> */}
+          {/* <Link href="/profile">
             <Button variant="ghost" size="sm" className="font-bold text-xs p-2">
               <User size={20} />
             </Button>
-          </Link>
-          <Link href="/dashboard">
-            <Button size="sm" className="rounded-full font-bold text-xs px-5 shadow-sm">
-              Dashboard
-            </Button>
-          </Link>
+          </Link> */}
+          {isLoggedIn ? (
+            <Link href="/dashboard">
+              <Button size="sm" className="rounded-full font-bold text-xs px-5 shadow-sm">
+                Dashboard
+              </Button>
+            </Link>
+          ) : (
+            <Link href="/login">
+              <Button size="sm" className="rounded-full font-bold text-xs px-5 shadow-sm gap-1.5">
+                <LogIn size={14} />
+                Login
+              </Button>
+            </Link>
+          )}
         </div>
 
         {/* Mobile Menu Button (Placeholder) */}

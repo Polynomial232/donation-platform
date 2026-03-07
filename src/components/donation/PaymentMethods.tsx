@@ -4,9 +4,11 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { QrisModal } from "@/components/donation/QrisModal";
 import { useState } from "react";
+import { useFormContext } from "react-hook-form";
 import { cn } from "@/lib/utils";
 
 import { CreatorSettings } from "@/types/discovery";
+import type { DonationFormValues } from "./DonationWrapper";
 
 interface PaymentMethodsProps {
   amount: number;
@@ -16,6 +18,14 @@ interface PaymentMethodsProps {
 export function PaymentMethods({ amount, settings }: PaymentMethodsProps) {
   const [isQrisModalOpen, setIsQrisModalOpen] = useState(false);
   const [selectedMethod, setSelectedMethod] = useState(settings.paymentMethods[0]?.key || "");
+
+  const { watch } = useFormContext<DonationFormValues>();
+  const senderName = watch("senderName");
+  const email = watch("email");
+  const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  const isFormValid =
+    !!senderName?.trim() && !!email?.trim() && EMAIL_REGEX.test(email?.trim() ?? "") && amount > 0;
 
   return (
     <>
@@ -76,8 +86,14 @@ export function PaymentMethods({ amount, settings }: PaymentMethodsProps) {
         </div>
 
         <Button
-          className="w-full bg-[var(--color-deep-purple)] hover:bg-[var(--color-deep-purple)]/90 text-white font-bold py-4 rounded-2xl shadow-lg shadow-purple-200 transition-all hover:scale-[1.02] active:scale-[0.98]"
-          onClick={() => selectedMethod === "QRIS" && setIsQrisModalOpen(true)}
+          disabled={!isFormValid}
+          className={cn(
+            "w-full bg-[var(--color-deep-purple)] text-white font-bold py-4 rounded-2xl shadow-lg shadow-purple-200 transition-all",
+            isFormValid
+              ? "hover:bg-[var(--color-deep-purple)]/90 hover:scale-[1.02] active:scale-[0.98]"
+              : "opacity-50 cursor-not-allowed"
+          )}
+          onClick={() => isFormValid && selectedMethod === "QRIS" && setIsQrisModalOpen(true)}
         >
           DUKUNG SEKARANG
         </Button>
