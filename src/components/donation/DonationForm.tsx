@@ -6,13 +6,14 @@ import { Gift, Volume2, Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { DonationFormValues } from "./DonationWrapper";
 
-const amounts = [5000, 10000, 20000, 50000, 100000];
+import { CreatorSettings } from "@/types/discovery";
 
 interface DonationFormProps {
   onSuccess?: (values: DonationFormValues) => void;
+  settings: CreatorSettings;
 }
 
-export function DonationForm({ onSuccess }: DonationFormProps) {
+export function DonationForm({ onSuccess, settings }: DonationFormProps) {
   const {
     register,
     handleSubmit,
@@ -30,52 +31,56 @@ export function DonationForm({ onSuccess }: DonationFormProps) {
     onSuccess?.(data);
   };
 
+  const showTabs = settings.isSoundEnabled; // Hide tabs if sound is disabled (assuming Gift is always the default)
+
   return (
     <Card className="overflow-hidden border-none shadow-sm">
-      <div className="flex p-2 gap-1 bg-slate-50/50">
-        <button
-          type="button"
-          onClick={() => setValue("activeTab", "gift")}
-          className={cn(
-            "flex-1 py-3 px-2 rounded-2xl font-bold text-xs flex flex-col items-center gap-1 transition-all",
-            activeTab === "gift"
-              ? "bg-white shadow-sm text-slate-900"
-              : "text-slate-400 hover:bg-white/50"
-          )}
-        >
-          <Gift
+      {settings.isSoundEnabled && (
+        <div className="flex p-2 gap-1 bg-slate-50/50">
+          <button
+            type="button"
+            onClick={() => setValue("activeTab", "gift")}
             className={cn(
-              "w-6 h-6",
-              activeTab === "gift" ? "text-[var(--color-deep-purple)]" : "text-slate-400"
+              "flex-1 py-3 px-2 rounded-2xl font-bold text-xs flex flex-col items-center gap-1 transition-all",
+              activeTab === "gift"
+                ? "bg-white shadow-sm text-slate-900"
+                : "text-slate-400 hover:bg-white/50"
             )}
-          />
-          <span>Hadiah</span>
-          {activeTab === "gift" && (
-            <div className="h-1 w-4 rounded-full bg-[var(--color-accent-yellow)] mt-1"></div>
-          )}
-        </button>
-        <button
-          type="button"
-          onClick={() => setValue("activeTab", "sound")}
-          className={cn(
-            "flex-1 py-3 px-2 rounded-2xl font-bold text-xs flex flex-col items-center gap-1 transition-all",
-            activeTab === "sound"
-              ? "bg-white shadow-sm text-slate-900"
-              : "text-slate-400 hover:bg-white/50"
-          )}
-        >
-          <Volume2
+          >
+            <Gift
+              className={cn(
+                "w-6 h-6",
+                activeTab === "gift" ? "text-[var(--color-deep-purple)]" : "text-slate-400"
+              )}
+            />
+            <span>Hadiah</span>
+            {activeTab === "gift" && (
+              <div className="h-1 w-4 rounded-full bg-[var(--color-accent-yellow)] mt-1"></div>
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={() => setValue("activeTab", "sound")}
             className={cn(
-              "w-6 h-6",
-              activeTab === "sound" ? "text-[var(--color-deep-purple)]" : "text-slate-400"
+              "flex-1 py-3 px-2 rounded-2xl font-bold text-xs flex flex-col items-center gap-1 transition-all",
+              activeTab === "sound"
+                ? "bg-white shadow-sm text-slate-900"
+                : "text-slate-400 hover:bg-white/50"
             )}
-          />
-          <span>Sound</span>
-          {activeTab === "sound" && (
-            <div className="h-1 w-4 rounded-full bg-[var(--color-accent-yellow)] mt-1"></div>
-          )}
-        </button>
-      </div>
+          >
+            <Volume2
+              className={cn(
+                "w-6 h-6",
+                activeTab === "sound" ? "text-[var(--color-deep-purple)]" : "text-slate-400"
+              )}
+            />
+            <span>Sound</span>
+            {activeTab === "sound" && (
+              <div className="h-1 w-4 rounded-full bg-[var(--color-accent-yellow)] mt-1"></div>
+            )}
+          </button>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-5">
         <div className="space-y-4">
@@ -183,15 +188,18 @@ export function DonationForm({ onSuccess }: DonationFormProps) {
             )}
 
             <p className="text-[10px] text-slate-400 font-bold mt-1 ml-1">
-              Jumlah Minimum Muncul di Alert: <span className="text-slate-600">IDR 5.000</span>
+              Jumlah Minimum Muncul di Alert:{" "}
+              <span className="text-slate-600">
+                IDR {settings.minAlertAmount.toLocaleString("id-ID")}
+              </span>
             </p>
 
-            {(amount ?? 0) > 0 && (amount ?? 0) < 5000 && (
+            {(amount ?? 0) > 0 && (amount ?? 0) < settings.minAlertAmount && (
               <div className="mt-2 bg-red-50 text-red-600 px-3 py-2 rounded-xl text-[10px] font-bold flex items-start gap-2 border border-red-100 animate-in fade-in slide-in-from-top-1">
                 <span className="text-lg leading-none">⚠️</span>
                 <span className="leading-tight">
-                  Hadiah kamu tidak akan tampil di alert kreator karena jumlahnya kurang dari IDR
-                  5.000
+                  Hadiah kamu tidak akan tampil di alert kreator karena jumlahnya kurang dari IDR{" "}
+                  {settings.minAlertAmount.toLocaleString("id-ID")}
                 </span>
               </div>
             )}
@@ -199,7 +207,7 @@ export function DonationForm({ onSuccess }: DonationFormProps) {
 
           {activeTab !== "sound" && (
             <div className="grid grid-cols-3 gap-2">
-              {amounts.map((amt) => (
+              {settings.fastAmounts.map((amt) => (
                 <button
                   key={amt}
                   type="button"

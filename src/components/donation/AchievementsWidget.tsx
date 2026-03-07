@@ -92,7 +92,16 @@ const achievements: Achievement[] = [
   },
 ];
 
-export function AchievementsWidget() {
+export function AchievementsWidget({ data }: { data?: any[] }) {
+  const items = (data || []).map((item) => ({
+    id: item.id,
+    title: item.name,
+    description: item.description,
+    imageUrl: item.imageUrl || "https://i.imgur.com/1Z3MVNG.jpeg",
+  }));
+
+  if (items.length === 0) return null;
+
   return (
     <Card className="border-none shadow-[0_4px_20px_-2px_rgba(0,0,0,0.04),0_2px_8px_-1px_rgba(0,0,0,0.02)] rounded-2xl p-4 overflow-visible">
       <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
@@ -101,7 +110,7 @@ export function AchievementsWidget() {
 
       {/* Flex Wrap Layout - No Scroll */}
       <div className="flex flex-wrap gap-3 relative z-10">
-        {achievements.map((item) => (
+        {items.map((item) => (
           <div key={item.id} className="group relative cursor-help">
             {/* Achievement Image */}
             <div className="w-12 h-12 rounded-xl bg-slate-50 border-2 border-slate-100 p-1 transition-all duration-300 transform group-hover:scale-110 group-hover:-translate-y-1 group-hover:shadow-md group-hover:border-[var(--color-deep-purple)] relative z-20">

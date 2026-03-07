@@ -5,23 +5,18 @@ import { Card } from "@/components/ui/card";
 import { Play, Pause, Music, Plus, Minus } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const sounds = [
-  { id: 1, title: "Ara Ara~", price: 10000, duration: "0:02" },
-  { id: 2, title: "Yamete Kudasai!", price: 20000, duration: "0:03" },
-  { id: 3, title: "Bruh Moment", price: 5000, duration: "0:01" },
-  { id: 4, title: "Windows XP Shutdown", price: 15000, duration: "0:04" },
-  { id: 5, title: "Vine Boom", price: 5000, duration: "0:01" },
-  { id: 6, title: "FBI Open Up!", price: 25000, duration: "0:03" },
-];
+import { SoundBoardItem } from "@/types/discovery";
 
 interface SoundListProps {
+  data?: SoundBoardItem[];
   selectedAmount: number;
   onSelectAmount: (amount: number) => void;
 }
 
-export function SoundList({ selectedAmount, onSelectAmount }: SoundListProps) {
-  const [playingId, setPlayingId] = useState<number | null>(null);
-  const [selectedId, setSelectedId] = useState<number | null>(null);
+export function SoundList({ data, selectedAmount, onSelectAmount }: SoundListProps) {
+  const sounds = data || [];
+  const [playingId, setPlayingId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
 
   // Effect to update parent amount when selection or quantity changes
@@ -32,19 +27,27 @@ export function SoundList({ selectedAmount, onSelectAmount }: SoundListProps) {
         onSelectAmount(sound.price * quantity);
       }
     }
-  }, [selectedId, quantity, onSelectAmount]);
+  }, [selectedId, quantity, onSelectAmount, sounds]);
 
-  const togglePlay = (id: number) => {
+  const togglePlay = (id: string, audioUrl?: string) => {
     if (playingId === id) {
       setPlayingId(null);
+      // In a real app, logic to stop audio would go here
     } else {
       setPlayingId(id);
-      // Simulate audio play
-      setTimeout(() => setPlayingId(null), 2000);
+
+      if (audioUrl) {
+        const audio = new Audio(audioUrl);
+        audio.play().catch((err) => console.error("Audio play failed:", err));
+        audio.onended = () => setPlayingId(null);
+      } else {
+        // Simulate audio play
+        setTimeout(() => setPlayingId(null), 2000);
+      }
     }
   };
 
-  const handleSelect = (id: number) => {
+  const handleSelect = (id: string) => {
     if (selectedId === id) return;
     setSelectedId(id);
     setQuantity(1);
@@ -85,7 +88,7 @@ export function SoundList({ selectedAmount, onSelectAmount }: SoundListProps) {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    togglePlay(sound.id);
+                    togglePlay(sound.id, sound.audioUrl);
                   }}
                   className={cn(
                     "w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-sm shrink-0",
@@ -108,7 +111,7 @@ export function SoundList({ selectedAmount, onSelectAmount }: SoundListProps) {
                       isSelected ? "text-[var(--color-deep-purple)]" : "text-slate-700"
                     )}
                   >
-                    {sound.title}
+                    {sound.name}
                   </p>
                   <p className="text-[10px] text-slate-400 font-medium mt-0.5">
                     Durasi: {sound.duration} • IDR {sound.price.toLocaleString("id-ID")}

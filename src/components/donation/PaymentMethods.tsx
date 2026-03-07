@@ -4,45 +4,68 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { QrisModal } from "@/components/donation/QrisModal";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
+
+import { CreatorSettings } from "@/types/discovery";
 
 interface PaymentMethodsProps {
   amount: number;
+  settings: CreatorSettings;
 }
 
-export function PaymentMethods({ amount }: PaymentMethodsProps) {
+export function PaymentMethods({ amount, settings }: PaymentMethodsProps) {
   const [isQrisModalOpen, setIsQrisModalOpen] = useState(false);
+  const [selectedMethod, setSelectedMethod] = useState(settings.paymentMethods[0]?.key || "");
 
   return (
     <>
       <Card className="p-6 border-none shadow-sm">
         <h3 className="font-bold text-sm text-slate-800 mb-4">Metode Pembayaran</h3>
         <div className="space-y-3">
-          <div className="p-4 bg-slate-50 rounded-2xl flex items-center justify-between border-2 border-[var(--color-pastel-yellow)] cursor-pointer">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-6 bg-white rounded flex items-center justify-center font-bold text-[9px] text-slate-800 shadow-sm border border-slate-100">
-                QRIS
+          {settings.paymentMethods.map((method) => (
+            <div
+              key={method.key}
+              onClick={() => setSelectedMethod(method.key)}
+              className={cn(
+                "p-4 bg-slate-50 rounded-2xl flex items-center justify-between border-2 transition-all cursor-pointer",
+                selectedMethod === method.key
+                  ? "border-[var(--color-pastel-yellow)] bg-white shadow-sm"
+                  : "border-transparent hover:bg-slate-100"
+              )}
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-6 bg-white rounded flex items-center justify-center font-bold text-[9px] text-slate-800 shadow-sm border border-slate-100 uppercase">
+                  {method.key}
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs font-bold text-slate-700">{method.name}</span>
+                  {method.description && (
+                    <span className="text-[10px] text-slate-400 font-medium">
+                      {method.description}
+                    </span>
+                  )}
+                </div>
               </div>
-              <span className="text-xs font-bold text-slate-700">GoPay, OVO, Dana</span>
-            </div>
-            <div className="w-5 h-5 rounded-full bg-[var(--color-accent-yellow)] flex items-center justify-center">
-              <div className="w-2 h-2 rounded-full bg-white"></div>
-            </div>
-          </div>
-          <div className="p-4 bg-slate-50 rounded-2xl flex items-center justify-between opacity-50 cursor-not-allowed">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-6 bg-white rounded flex items-center justify-center font-bold text-[9px] text-blue-600 border border-slate-100">
-                PayPal
+              <div
+                className={cn(
+                  "w-5 h-5 rounded-full flex items-center justify-center transition-all",
+                  selectedMethod === method.key
+                    ? "bg-[var(--color-accent-yellow)] border-transparent"
+                    : "border-2 border-slate-200"
+                )}
+              >
+                {selectedMethod === method.key && (
+                  <div className="w-2 h-2 rounded-full bg-white animate-in zoom-in duration-300"></div>
+                )}
               </div>
-              <span className="text-xs font-bold text-slate-700">International</span>
             </div>
-            <div className="w-5 h-5 rounded-full border-2 border-slate-200"></div>
-          </div>
+          ))}
         </div>
 
         <div className="mt-8 pt-6 border-t border-slate-100 space-y-3">
           <div className="flex justify-between text-xs font-medium text-slate-400">
             <span>Dukungan Dasar</span>
-            <span>IDR 5.000</span>
+            <span>IDR {settings.minAlertAmount.toLocaleString("id-ID")}</span>
           </div>
           <div className="flex justify-between items-center mb-4">
             <span className="text-sm font-bold text-slate-500">Total Pembayaran</span>
@@ -54,7 +77,7 @@ export function PaymentMethods({ amount }: PaymentMethodsProps) {
 
         <Button
           className="w-full bg-[var(--color-deep-purple)] hover:bg-[var(--color-deep-purple)]/90 text-white font-bold py-4 rounded-2xl shadow-lg shadow-purple-200 transition-all hover:scale-[1.02] active:scale-[0.98]"
-          onClick={() => setIsQrisModalOpen(true)}
+          onClick={() => selectedMethod === "QRIS" && setIsQrisModalOpen(true)}
         >
           DUKUNG SEKARANG
         </Button>

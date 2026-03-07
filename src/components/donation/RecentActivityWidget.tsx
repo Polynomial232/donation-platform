@@ -13,32 +13,22 @@ interface ActivityItem {
   time: Date;
 }
 
-export function RecentActivityWidget() {
-  const [activities, setActivities] = useState<ActivityItem[]>([
-    {
-      user: "Budi Santoso",
-      action: "donated",
-      amount: 50000,
-      time: new Date(Date.now() - 1000 * 60 * 2),
-    },
-    {
-      user: "Siti Aminah",
-      action: "donated",
-      amount: 100000,
-      time: new Date(Date.now() - 1000 * 60 * 5),
-    },
-    {
-      user: "Joko",
-      action: "donated",
-      amount: 10000,
-      time: new Date(Date.now() - 1000 * 60 * 60 * 24 * 8),
-    },
-  ]);
+export function RecentActivityWidget({ data }: { data?: any[] }) {
+  // Use data from props, fallback to empty array
+  const activityItems: ActivityItem[] = (data || []).map((item) => ({
+    user: item.donorName,
+    action: "donated",
+    amount: item.amount,
+    time: new Date(item.createdAt),
+  }));
+
+  // State to trigger re-renders for relative time updates
+  const [, setTick] = useState(0);
 
   // Update relative time ("2m ago") every minute
   useEffect(() => {
     const interval = setInterval(() => {
-      setActivities((prev) => [...prev]); // Trigger re-render to update 'fromNow'
+      setTick((prev) => prev + 1);
     }, 60000);
     return () => clearInterval(interval);
   }, []);
@@ -54,7 +44,6 @@ export function RecentActivityWidget() {
     }
 
     // Custom short relative time
-    // "2m ago", "5m ago"
     return (
       activityDate
         .fromNow(true)
@@ -79,24 +68,33 @@ export function RecentActivityWidget() {
         <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
       </div>
       <div className="divide-y divide-slate-50">
-        {activities.map((activity, idx) => (
-          <div key={idx} className="p-3 flex items-start gap-3 hover:bg-slate-50 transition-colors">
-            <div className="bg-red-50 text-red-500 p-1.5 rounded-full mt-0.5">
-              <Heart size={12} fill="currentColor" />
+        {activityItems.length > 0 ? (
+          activityItems.map((activity, idx) => (
+            <div
+              key={idx}
+              className="p-3 flex items-start gap-3 hover:bg-slate-50 transition-colors"
+            >
+              <div className="bg-red-50 text-red-500 p-1.5 rounded-full mt-0.5">
+                <Heart size={12} fill="currentColor" />
+              </div>
+              <div>
+                <p className="text-xs text-slate-600">
+                  <span className="font-bold text-slate-900">{activity.user}</span> donated{" "}
+                  <span className="font-bold text-[var(--color-deep-purple)]">
+                    IDR {activity.amount.toLocaleString("id-ID")}
+                  </span>
+                </p>
+                <p className="text-[10px] text-slate-400 font-bold mt-0.5">
+                  {formatTime(activity.time)}
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-xs text-slate-600">
-                <span className="font-bold text-slate-900">{activity.user}</span> donated{" "}
-                <span className="font-bold text-[var(--color-deep-purple)]">
-                  IDR {activity.amount.toLocaleString("id-ID")}
-                </span>
-              </p>
-              <p className="text-[10px] text-slate-400 font-bold mt-0.5">
-                {formatTime(activity.time)}
-              </p>
-            </div>
+          ))
+        ) : (
+          <div className="p-8 text-center">
+            <p className="text-xs text-slate-400 font-bold">No activity yet</p>
           </div>
-        ))}
+        )}
       </div>
     </Card>
   );

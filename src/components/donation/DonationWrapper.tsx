@@ -9,6 +9,8 @@ import { MediaShareForm } from "./MediaShareForm";
 import { SoundList } from "./SoundList";
 import { PaymentMethods } from "./PaymentMethods";
 
+import { CreatorSettings, SoundBoardItem } from "@/types/discovery";
+
 const donationSchema = z.object({
   senderName: z.string().min(1, "Nama pengirim diperlukan"),
   email: z.string().email("Email tidak valid").optional().or(z.literal("")),
@@ -20,12 +22,17 @@ const donationSchema = z.object({
 
 export type DonationFormValues = z.infer<typeof donationSchema>;
 
-export function DonationWrapper() {
+interface DonationWrapperProps {
+  settings: CreatorSettings;
+  soundBoard?: SoundBoardItem[];
+}
+
+export function DonationWrapper({ settings, soundBoard }: DonationWrapperProps) {
   const methods = useForm<DonationFormValues>({
     resolver: zodResolver(donationSchema),
     defaultValues: {
       activeTab: "gift",
-      amount: 10000,
+      amount: settings.minAlertAmount || settings.fastAmounts[0] || 10000,
       isEmailPrivate: false,
       senderName: "",
       email: "",
@@ -52,24 +59,25 @@ export function DonationWrapper() {
   return (
     <FormProvider {...methods}>
       <div id="donation-form" className="space-y-6">
-        <DonationForm />
+        <DonationForm settings={settings} />
 
-        {activeTab === "gift" && (
+        {settings.isMediaShareEnabled && activeTab === "gift" && (
           <div className="animate-in fade-in slide-in-from-top-4 duration-300">
             <MediaShareForm />
           </div>
         )}
 
-        {activeTab === "sound" && (
+        {settings.isSoundEnabled && activeTab === "sound" && (
           <div className="animate-in fade-in slide-in-from-top-4 duration-300">
             <SoundList
+              data={soundBoard}
               selectedAmount={amount}
               onSelectAmount={(amt) => methods.setValue("amount", amt)}
             />
           </div>
         )}
 
-        <PaymentMethods amount={amount} />
+        <PaymentMethods amount={amount} settings={settings} />
       </div>
     </FormProvider>
   );

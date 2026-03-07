@@ -21,141 +21,29 @@ interface Donation {
   mediaTitle?: string; // For Mediashare/Soundboard
 }
 
-export function DonationHistory() {
+export function DonationHistory({ data }: { data?: any[] }) {
   const [isViewAllOpen, setIsViewAllOpen] = useState(false);
 
-  // Mock data state
-  const [history, setHistory] = useState<Donation[]>([
-    {
-      id: "1",
-      supporter: "Bambang Gentolet",
-      amount: 50000,
-      message: "Semangat bang live-nya! Request lagu galau dong.",
-      type: "Mediashare",
-      mediaTitle: "Bernadya - Satu Bulan (Official Lyric Video)",
-      timestamp: new Date(Date.now() - 1000 * 60 * 2), // 2 mins ago
-    },
-    {
-      id: "2",
-      supporter: "Kucing Oren",
-      amount: 10000,
-      message: "Makan bang!",
-      type: "Coffee",
-      timestamp: new Date(Date.now() - 1000 * 60 * 5), // 5 mins ago
-    },
-    {
-      id: "3",
-      supporter: "Anonim",
-      amount: 100000,
-      message: "Jumpscare active!",
-      type: "Soundboard",
-      mediaTitle: "Kuntilanak Laugh.mp3",
-      timestamp: new Date(Date.now() - 1000 * 60 * 12), // 12 mins ago
-    },
-    {
-      id: "4",
-      supporter: "Siti Nurbaya",
-      amount: 25000,
-      message: "Gabut aja kirim duit.",
-      type: "Donation",
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 1), // 1 hour ago
-    },
-    {
-      id: "5",
-      supporter: "Windah Lovers",
-      amount: 69420,
-      message: "Absen bang!",
-      type: "Donation",
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 800), // 2 hours ago
-    },
-  ]);
+  // Map API data to component data
+  const historyItems: Donation[] = (data || []).map((item) => ({
+    id: item.id || Math.random().toString(),
+    supporter: item.donorName,
+    avatar: item.donorAvatar || item.donor?.avatarUrl,
+    amount: item.amount,
+    message: item.message,
+    type: "Donation", // Fallback to Donation
+    timestamp: new Date(item.createdAt),
+    mediaTitle: item.mediaUrl, // Just for display
+  }));
 
-  const [fullHistory, setFullHistory] = useState<Donation[]>([
-    ...history,
-    {
-      id: "6",
-      supporter: "User 6",
-      amount: 15000,
-      message: "GGWP!",
-      type: "Donation",
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 3),
-    },
-    {
-      id: "7",
-      supporter: "User 7",
-      amount: 20000,
-      message: "Hello!",
-      type: "Coffee",
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 4),
-    },
-    {
-      id: "8",
-      supporter: "Sultan",
-      amount: 1000000,
-      message: "Support terus!",
-      type: "Donation",
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 5),
-    },
-    {
-      id: "9",
-      supporter: "Fans Berat",
-      amount: 5000,
-      message: "Semangat!",
-      type: "Donation",
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 6),
-    },
-    {
-      id: "10",
-      supporter: "Gamer",
-      amount: 12000,
-      message: "Main game horor bang",
-      type: "Donation",
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 7),
-    },
-    {
-      id: "11",
-      supporter: "Viewer",
-      amount: 10000,
-      type: "Donation",
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 8),
-    },
-    {
-      id: "12",
-      supporter: "Donatur",
-      amount: 50000,
-      message: "Nice content",
-      type: "Donation",
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 9),
-    },
-    {
-      id: "13",
-      supporter: "Supporter",
-      amount: 25000,
-      type: "Donation",
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 10),
-    },
-    {
-      id: "14",
-      supporter: "User 14",
-      amount: 10000,
-      type: "Coffee",
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 11),
-    },
-    {
-      id: "15",
-      supporter: "User 15",
-      amount: 100000,
-      message: "Keep it up!",
-      type: "Soundboard",
-      mediaTitle: "Applause",
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 12),
-    },
-  ]);
+  const history = historyItems.slice(0, 10);
+  const fullHistory = historyItems;
 
-  // Update time regularly
+  // Update time for relative display
+  const [, setTick] = useState(0);
   useEffect(() => {
     const interval = setInterval(() => {
-      setHistory((prev) => [...prev]);
+      setTick((prev) => prev + 1);
     }, 60000);
     return () => clearInterval(interval);
   }, []);

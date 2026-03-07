@@ -111,8 +111,19 @@ interface Supporter {
   rank: number;
 }
 
-export function LeaderboardWidget() {
+export function LeaderboardWidget({ data }: { data?: any[] }) {
   const [isViewAllOpen, setIsViewAllOpen] = useState(false);
+
+  // Map API data to component data
+  const supporters: Supporter[] = (data || []).map((item, index) => ({
+    name: item.donorName,
+    amount: `IDR ${item.totalAmount?.toLocaleString("id-ID")}`,
+    avatar: item.avatarUrl || "https://i.imgur.com/1Z3MVNG.jpeg",
+    rank: index + 1,
+  }));
+
+  const topSupportersList = supporters.slice(0, 5);
+  const fullLeaderboardList = supporters;
 
   const SupporterItem = ({ supporter }: { supporter: Supporter }) => (
     <div className="flex items-center gap-3 p-3 hover:bg-slate-50 rounded-xl transition-colors">
@@ -144,24 +155,32 @@ export function LeaderboardWidget() {
           </h3>
         </div>
         <div className="p-2">
-          {topSupporters.map((supporter, index) => (
-            <SupporterItem key={index} supporter={supporter} />
-          ))}
+          {topSupportersList.length > 0 ? (
+            topSupportersList.map((supporter, index) => (
+              <SupporterItem key={index} supporter={supporter} />
+            ))
+          ) : (
+            <div className="p-8 text-center">
+              <p className="text-xs text-slate-400 font-bold">No supporters yet</p>
+            </div>
+          )}
         </div>
-        <div className="p-3 border-t border-slate-50 text-center">
-          <button
-            onClick={() => setIsViewAllOpen(true)}
-            className="text-[10px] font-bold text-slate-400 hover:text-[var(--color-deep-purple)] transition-colors uppercase tracking-widest"
-          >
-            View All Sultans
-          </button>
-        </div>
+        {fullLeaderboardList.length > 5 && (
+          <div className="p-3 border-t border-slate-50 text-center">
+            <button
+              onClick={() => setIsViewAllOpen(true)}
+              className="text-[10px] font-bold text-slate-400 hover:text-[var(--color-deep-purple)] transition-colors uppercase tracking-widest"
+            >
+              View All Sultans
+            </button>
+          </div>
+        )}
       </Card>
 
       <Modal isOpen={isViewAllOpen} onClose={() => setIsViewAllOpen(false)} title="Top Sultans">
         <ScrollArea className="h-[400px] pr-4">
           <div className="space-y-1">
-            {fullLeaderboard.map((supporter, index) => (
+            {fullLeaderboardList.map((supporter, index) => (
               <SupporterItem key={index} supporter={supporter} />
             ))}
           </div>

@@ -4,11 +4,18 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Shield, Sword, Users, ChevronRight } from "lucide-react";
 
-export function CommunityQuestWidget() {
-  // Mock Data
-  const currentAmount = 750000;
-  const targetAmount = 1000000;
-  const progress = Math.min(100, Math.round((currentAmount / targetAmount) * 100));
+export function CommunityQuestWidget({ data }: { data?: any }) {
+  const title = data?.title || "Community Quest";
+  const currentAmount = data?.currentAmount || 0;
+  const targetAmount = data?.targetAmount || 0;
+
+  // Use the percentage from the API if provided, otherwise calculate it
+  const progress =
+    data?.percentage !== undefined
+      ? Math.min(100, Math.round(data.percentage))
+      : targetAmount > 0
+        ? Math.min(100, Math.round((currentAmount / targetAmount) * 100))
+        : 0;
 
   return (
     <Card className="border-none shadow-[0_4px_20px_-2px_rgba(0,0,0,0.04),0_2px_8px_-1px_rgba(0,0,0,0.02)] rounded-2xl overflow-hidden relative">
@@ -23,12 +30,14 @@ export function CommunityQuestWidget() {
             </div>
             <div>
               <h3 className="text-sm font-extrabold text-slate-900 flex items-center gap-1.5">
-                Cosplay Stream
+                {title}
                 <span className="bg-[var(--color-pastel-purple)] text-[var(--color-deep-purple)] text-[10px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wide">
                   Quest
                 </span>
               </h3>
-              <p className="text-xs text-slate-500 font-medium">Unlock special costume reveal!</p>
+              {data?.description && (
+                <p className="text-xs text-slate-500 font-medium">{data.description}</p>
+              )}
             </div>
           </div>
         </div>

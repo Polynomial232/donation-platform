@@ -32,4 +32,8 @@ export const discoveryService = {
     });
     return response.data;
   },
+  getCreatorByUsername: async (username: string) => {
+    const response = await api.get(`/discovery/creators/${username}`);
+    return response.data;
+  },
 };

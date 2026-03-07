@@ -24,7 +24,16 @@ const pinnedItems = [
   },
 ];
 
-export function PinnedWidget() {
+export function PinnedWidget({ data }: { data?: any[] }) {
+  const items = (data || []).map((item) => ({
+    name: item.donorName,
+    amount: `IDR ${item.amount?.toLocaleString("id-ID")}`,
+    avatar: item.donorAvatar || item.donor?.avatarUrl || "https://i.imgur.com/1Z3MVNG.jpeg",
+    message: item.message,
+  }));
+
+  if (items.length === 0) return null;
+
   return (
     <Card className="border-none shadow-[0_4px_20px_-2px_rgba(0,0,0,0.04),0_2px_8px_-1px_rgba(0,0,0,0.02)] rounded-2xl overflow-hidden divide-y divide-slate-50">
       <div className="bg-[var(--color-pastel-purple)] px-4 py-3 flex items-center justify-between">
@@ -35,11 +44,11 @@ export function PinnedWidget() {
           </h3>
         </div>
         <span className="bg-white/50 text-[var(--color-deep-purple)] text-[10px] font-bold px-2 py-0.5 rounded-full">
-          {pinnedItems.length}
+          {items.length}
         </span>
       </div>
 
-      {pinnedItems.map((item, idx) => (
+      {items.map((item, idx) => (
         <div key={idx} className="p-5 space-y-3">
           <div className="flex gap-3">
             <div className="w-10 h-10 rounded-full bg-slate-100 overflow-hidden relative border-2 border-white shadow-sm flex-shrink-0">
