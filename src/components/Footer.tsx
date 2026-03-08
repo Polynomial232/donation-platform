@@ -26,14 +26,14 @@ export function Footer() {
         </div>
       </footer>
 
-      <div className="fixed bottom-6 right-6 z-[100]">
+      {/* <div className="fixed bottom-6 right-6 z-[100]">
         <Card className="p-4 max-w-[160px] flex flex-col items-center gap-3 shadow-xl">
           <p className="text-[10px] font-bold text-center text-slate-600">Butuh bantuan?</p>
           <div className="bg-[var(--color-pastel-purple)] p-2 rounded-full text-[var(--color-deep-purple)] flex items-center justify-center cursor-pointer hover:bg-[var(--color-accent-purple)] transition-colors">
             <MessageCircle size={20} />
           </div>
         </Card>
-      </div>
+      </div> */}
     </>
   );
 }

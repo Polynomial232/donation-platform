@@ -13,7 +13,7 @@ import { CreatorSettings, SoundBoardItem } from "@/types/discovery";
 
 const donationSchema = z.object({
   senderName: z.string().min(1, "Nama pengirim diperlukan"),
-  email: z.string().email("Email tidak valid").optional().or(z.literal("")),
+  email: z.string().min(1, "Email diperlukan").email("Format email tidak valid"),
   message: z.string().optional(),
   amount: z.number().min(1, "Jumlah minimal IDR 1"),
   isEmailPrivate: z.boolean(),

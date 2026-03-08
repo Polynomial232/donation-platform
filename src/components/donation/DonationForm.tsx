@@ -106,7 +106,7 @@ export function DonationForm({ onSuccess, settings }: DonationFormProps) {
 
           <div>
             <label className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">
-              Email (Opsional)
+              Email
             </label>
             <div className="space-y-2">
               <input
@@ -219,7 +219,7 @@ export function DonationForm({ onSuccess, settings }: DonationFormProps) {
                       : "bg-white border border-slate-100 text-slate-600 hover:bg-slate-50"
                   )}
                 >
-                  IDR {amt >= 1000 ? `${amt / 1000}k` : amt}
+                  IDR {amt.toLocaleString("id-ID")}
                 </button>
               ))}
             </div>

@@ -7,7 +7,7 @@ import { BellRing, Volume2, Settings } from "lucide-react";
 export default function AlertsPage() {
   return (
     <main className="min-h-screen bg-[var(--color-off-white)] pb-12">
-      <div className="max-w-2xl mx-auto px-4 mt-8 space-y-6">
+      <div className="max-w-2xl mx-auto px-4 pt-8 space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-extrabold text-slate-900">My Alerts</h1>
           <Button variant="outline" size="sm" className="rounded-xl">

@@ -4,17 +4,16 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Shield, Sword, Users, ChevronRight } from "lucide-react";
 
-export function CommunityQuestWidget({ data }: { data?: any }) {
-  const title = data?.title || "Community Quest";
+export function GoalsWidget({ data, title }: { data?: any; title?: string }) {
   const currentAmount = data?.currentAmount || 0;
   const targetAmount = data?.targetAmount || 0;
 
   // Use the percentage from the API if provided, otherwise calculate it
   const progress =
     data?.percentage !== undefined
-      ? Math.min(100, Math.round(data.percentage))
+      ? Math.round(data.percentage)
       : targetAmount > 0
-        ? Math.min(100, Math.round((currentAmount / targetAmount) * 100))
+        ? Math.round((currentAmount / targetAmount) * 100)
         : 0;
 
   return (
@@ -30,14 +29,12 @@ export function CommunityQuestWidget({ data }: { data?: any }) {
             </div>
             <div>
               <h3 className="text-sm font-extrabold text-slate-900 flex items-center gap-1.5">
-                {title}
+                {title || "Community Quest"}
                 <span className="bg-[var(--color-pastel-purple)] text-[var(--color-deep-purple)] text-[10px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wide">
                   Quest
                 </span>
               </h3>
-              {data?.description && (
-                <p className="text-xs text-slate-500 font-medium">{data.description}</p>
-              )}
+              {data?.title && <p className="text-xs text-slate-500 font-medium">{data.title}</p>}
             </div>
           </div>
         </div>
@@ -47,7 +44,8 @@ export function CommunityQuestWidget({ data }: { data?: any }) {
           <div className="flex justify-between text-xs font-bold">
             <span className="text-[var(--color-deep-purple)]">{progress}% Completed</span>
             <span className="text-slate-400">
-              {currentAmount.toLocaleString()} / {targetAmount.toLocaleString()}
+              IDR {currentAmount.toLocaleString("id-ID")} / IDR{" "}
+              {targetAmount.toLocaleString("id-ID")}
             </span>
           </div>
           <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden border border-slate-100">
@@ -64,19 +62,21 @@ export function CommunityQuestWidget({ data }: { data?: any }) {
         <div className="mt-5 pt-4 border-t border-slate-50 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="flex -space-x-2">
-              {[1, 2, 3].map((i) => (
+              {Array.from({ length: Math.min(data?.participantsCount ?? 0, 3) }).map((_, i) => (
                 <div
                   key={i}
                   className="w-6 h-6 rounded-full border-2 border-white bg-slate-200 overflow-hidden relative"
                 >
                   <img
-                    src={`https://i.imgur.com/1Z3MVNG.jpeg`}
+                    src={`https://i.pravatar.cc/48?img=${i + 1}`}
                     className="object-cover w-full h-full"
                   />
                 </div>
               ))}
             </div>
-            <span className="text-[10px] text-slate-400 font-bold ml-1">+12 Heroes joined</span>
+            <span className="text-[10px] text-slate-400 font-bold ml-1">
+              +{data?.participantsCount ?? 0} Heroes joined
+            </span>
           </div>
 
           <Button

@@ -4,7 +4,7 @@ import { Bell, Heart, PlayCircle } from "lucide-react";
 export default function ActivityPage() {
   return (
     <main className="min-h-screen bg-[var(--color-off-white)] pb-12">
-      <div className="max-w-2xl mx-auto px-4 mt-8 space-y-6">
+      <div className="max-w-2xl mx-auto px-4 pt-8 space-y-6">
         <h1 className="text-2xl font-extrabold text-slate-900">Activity</h1>
 
         <div className="space-y-4">

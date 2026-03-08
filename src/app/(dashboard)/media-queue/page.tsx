@@ -73,7 +73,7 @@ export default function MediaQueuePage() {
       </Card>
 
       {/* Queue List */}
-      <h3 className="text-lg font-bold text-slate-900 mt-8">Up Next</h3>
+      <h3 className="text-lg font-bold text-slate-900 pt-8">Up Next</h3>
       <div className="space-y-3">
         {[1, 2, 3].map((i) => (
           <Card
