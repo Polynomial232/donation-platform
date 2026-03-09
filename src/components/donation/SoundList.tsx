@@ -88,7 +88,7 @@ export function SoundList({ data, selectedAmount, onSelectAmount }: SoundListPro
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    togglePlay(sound.id, sound.audioUrl);
+                    togglePlay(sound.id, sound.audio_url);
                   }}
                   className={cn(
                     "w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-sm shrink-0",

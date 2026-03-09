@@ -27,13 +27,13 @@ export function DonationHistory({ data }: { data?: any[] }) {
   // Map API data to component data
   const historyItems: Donation[] = (data || []).map((item) => ({
     id: item.id || Math.random().toString(),
-    supporter: item.donorName,
-    avatar: item.donorAvatar || item.donor?.avatarUrl,
+    supporter: item.donor_name || "Anonymous",
+    avatar: item.donor_avatar,
     amount: item.amount,
     message: item.message,
-    type: "Donation", // Fallback to Donation
-    timestamp: new Date(item.createdAt),
-    mediaTitle: item.mediaUrl, // Just for display
+    type: item.type || "Donation", // Use type from API
+    timestamp: new Date(item.created_at),
+    mediaTitle: item.media_url, // Just for display
   }));
 
   const history = historyItems.slice(0, 10);

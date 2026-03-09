@@ -92,7 +92,7 @@ function ExploreContent() {
       }),
     initialPageParam: 1,
     getNextPageParam: (lastPage: any) => {
-      if (lastPage?.metadata?.page < lastPage?.metadata?.lastPage) {
+      if (lastPage?.metadata?.page < lastPage?.metadata?.last_page) {
         return lastPage.metadata.page + 1;
       }
       return undefined;
@@ -134,14 +134,14 @@ function ExploreContent() {
   const mapCreator = (c: any) => ({
     id: c.id || c.username,
     username: c.username,
-    displayName: c.displayName || c.username,
+    displayName: c.display_name || c.username,
     role: c.categories?.[0] || "Creator",
     category: c.categories?.[0] || "Creator",
-    banner: c.bannerUrl || "https://i.imgur.com/1Z3MVNG.jpeg",
-    avatar: c.avatarUrl || "https://i.imgur.com/1Z3MVNG.jpeg",
+    banner: c.banner_url || "https://i.imgur.com/1Z3MVNG.jpeg",
+    avatar: c.avatar_url || "https://i.imgur.com/1Z3MVNG.jpeg",
     bio: c.bio || "",
     isHot: c.is_hot,
-    isVerified: c.isVerified,
+    isVerified: c.is_verified,
     borderColor: "border-[var(--color-pastel-purple)]",
     bgColor: "bg-purple-50",
     icon: <Palette className="text-[var(--color-deep-purple)]" size={32} />,

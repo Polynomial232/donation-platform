@@ -57,7 +57,7 @@ export default function LandingPage() {
   const hero = landing?.hero;
   const features = landing?.features;
   const demo = landing?.demo;
-  const supportedBy = landing?.siteSetting?.supportedBy;
+  const supportedBy = landing?.site_setting?.supported_by;
 
   return (
     <main className="min-h-screen bg-[var(--color-off-white)]">
@@ -70,7 +70,7 @@ export default function LandingPage() {
               width={160}
               height={160}
               className="w-40 h-40 mx-auto relative z-10"
-              src={hero.imageUrl}
+              src={hero.image_url}
             />
           </div>
           <div className="space-y-3">
@@ -84,7 +84,7 @@ export default function LandingPage() {
             </div>
             <input
               className="flex-1 bg-transparent border-none focus:ring-0 text-sm font-medium py-3 outline-none"
-              placeholder={hero.searchPlaceholder}
+              placeholder={hero.search_placeholder}
               type="text"
             />
             <button className="bg-[var(--color-accent-yellow)] p-3 rounded-2xl hover:bg-[var(--color-pastel-yellow)] transition-colors">
@@ -170,7 +170,7 @@ export default function LandingPage() {
                   Pengirim
                 </label>
                 <div className="w-full bg-slate-50 border-none rounded-2xl px-5 py-4 text-sm text-slate-800 font-medium">
-                  {demo.placeholderName}
+                  {demo.placeholder_name}
                 </div>
               </div>
               <div className="space-y-1.5">
@@ -178,7 +178,7 @@ export default function LandingPage() {
                   Pesan
                 </label>
                 <div className="w-full bg-slate-50 border-none rounded-2xl px-5 py-4 text-sm text-slate-500 h-24">
-                  {demo.placeholderMessage}
+                  {demo.placeholder_message}
                 </div>
               </div>
             </div>

@@ -17,7 +17,7 @@ interface PaymentMethodsProps {
 
 export function PaymentMethods({ amount, settings }: PaymentMethodsProps) {
   const [isQrisModalOpen, setIsQrisModalOpen] = useState(false);
-  const [selectedMethod, setSelectedMethod] = useState(settings.paymentMethods[0]?.key || "");
+  const [selectedMethod, setSelectedMethod] = useState(settings.payment_methods[0]?.key || "");
 
   const { watch } = useFormContext<DonationFormValues>();
   const senderName = watch("senderName");
@@ -32,7 +32,7 @@ export function PaymentMethods({ amount, settings }: PaymentMethodsProps) {
       <Card className="p-6 border-none shadow-sm">
         <h3 className="font-bold text-sm text-slate-800 mb-4">Metode Pembayaran</h3>
         <div className="space-y-3">
-          {settings.paymentMethods.map((method) => (
+          {settings.payment_methods.map((method) => (
             <div
               key={method.key}
               onClick={() => setSelectedMethod(method.key)}
@@ -75,7 +75,7 @@ export function PaymentMethods({ amount, settings }: PaymentMethodsProps) {
         <div className="mt-8 pt-6 border-t border-slate-100 space-y-3">
           <div className="flex justify-between text-xs font-medium text-slate-400">
             <span>Dukungan Dasar</span>
-            <span>IDR {settings.minAlertAmount.toLocaleString("id-ID")}</span>
+            <span>IDR {settings.min_alert_amount.toLocaleString("id-ID")}</span>
           </div>
           <div className="flex justify-between items-center mb-4">
             <span className="text-sm font-bold text-slate-500">Total Pembayaran</span>

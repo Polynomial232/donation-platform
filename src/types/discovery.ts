@@ -1,5 +1,5 @@
 export interface CreatorDetailResponse {
-  success: boolean;
+  status_code: number;
   message: string;
   data: CreatorDetailData;
   metadata: any;
@@ -9,7 +9,7 @@ export interface CreatorDetailData {
   profile: CreatorProfile;
   settings: CreatorSettings;
   sections: CreatorSection[];
-  soundBoard: SoundBoardItem[];
+  sound_board: SoundBoardItem[];
 }
 
 export interface SoundBoardItem {
@@ -17,33 +17,39 @@ export interface SoundBoardItem {
   name: string;
   duration: string;
   price: number;
-  audioUrl: string;
+  audio_url: string;
 }
 
 export interface CreatorSettings {
-  isMediaShareEnabled: boolean;
-  isSoundEnabled: boolean;
-  minAlertAmount: number;
-  fastAmounts: number[];
-  paymentMethods: {
+  is_media_share_enabled: boolean;
+  media_share_settings: {
+    youtube: { is_enabled: boolean; max_duration_seconds: number; price_per_second: number };
+    tiktok: { is_enabled: boolean; max_duration_seconds: number; price_per_second: number };
+    reels: { is_enabled: boolean; max_duration_seconds: number; price_per_second: number };
+    voice: { is_enabled: boolean; max_duration_seconds: number; price_per_second: number };
+    gif: { is_enabled: boolean };
+  } | null;
+  is_sound_enabled: boolean;
+  min_alert_amount: number;
+  fast_amounts: number[];
+  payment_methods: {
     key: string;
     name: string;
     description?: string;
-    isInternational: boolean;
+    is_international: boolean;
   }[];
 }
 
 export interface CreatorProfile {
   id: string;
   username: string;
-  displayName: string;
-  avatarUrl: string;
-  bannerUrl: string;
+  display_name: string;
+  avatar_url: string;
+  banner_url: string;
   bio: string;
-  isVerified: boolean;
-  isLive: boolean;
-  description: string;
-  isFollowing: boolean;
+  is_verified: boolean;
+  is_live: boolean;
+  is_following: boolean;
   socials: {
     platform: string;
     url: string;
@@ -61,6 +67,6 @@ export interface CreatorSection {
     | "CUSTOM_CONTENT"
     | "LEADERBOARD";
   title: string;
-  isEnabled: boolean;
+  is_enabled: boolean;
   data: any;
 }

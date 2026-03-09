@@ -116,9 +116,9 @@ export function LeaderboardWidget({ data }: { data?: any[] }) {
 
   // Map API data to component data
   const supporters: Supporter[] = (data || []).map((item, index) => ({
-    name: item.donorName,
-    amount: `IDR ${item.totalAmount?.toLocaleString("id-ID")}`,
-    avatar: item.avatarUrl || "https://i.imgur.com/1Z3MVNG.jpeg",
+    name: item.donor_name || "Anonymous",
+    amount: `IDR ${item.total_amount?.toLocaleString("id-ID") || 0}`,
+    avatar: item.avatar_url || "https://i.imgur.com/1Z3MVNG.jpeg",
     rank: index + 1,
   }));
 

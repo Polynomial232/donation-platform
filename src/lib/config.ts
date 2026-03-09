@@ -3,6 +3,7 @@ const config = {
   API_SECRET_KEY: process.env.API_SECRET_KEY as string | undefined,
   APP_NAME: process.env.NEXT_PUBLIC_APP_NAME || undefined,
   APP_DESCRIPTION: process.env.NEXT_PUBLIC_APP_DESCRIPTION || undefined,
+  GIPHY_API_KEY: process.env.NEXT_PUBLIC_GIPHY_API_KEY || undefined,
   DEBUG: process.env.NODE_ENV !== "production",
 };
 

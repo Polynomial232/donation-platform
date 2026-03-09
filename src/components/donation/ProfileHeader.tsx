@@ -42,7 +42,7 @@ export function ProfileHeader({
             <Check className="w-3 h-3 stroke-[4]" />
           </div>
         </div>
-        <div className="mt-3 flex justify-between items-end">
+        <div className="mt-3 flex justify-between items-end w-full">
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-1.5 justify-between">
               <div className="flex items-center gap-1.5">

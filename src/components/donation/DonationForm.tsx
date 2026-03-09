@@ -31,11 +31,11 @@ export function DonationForm({ onSuccess, settings }: DonationFormProps) {
     onSuccess?.(data);
   };
 
-  const showTabs = settings.isSoundEnabled; // Hide tabs if sound is disabled (assuming Gift is always the default)
+  const showTabs = settings.is_sound_enabled; // Hide tabs if sound is disabled (assuming Gift is always the default)
 
   return (
     <Card className="overflow-hidden border-none shadow-sm">
-      {settings.isSoundEnabled && (
+      {settings.is_sound_enabled && (
         <div className="flex p-2 gap-1 bg-slate-50/50">
           <button
             type="button"
@@ -190,16 +190,16 @@ export function DonationForm({ onSuccess, settings }: DonationFormProps) {
             <p className="text-[10px] text-slate-400 font-bold mt-1 ml-1">
               Jumlah Minimum Muncul di Alert:{" "}
               <span className="text-slate-600">
-                IDR {settings.minAlertAmount.toLocaleString("id-ID")}
+                IDR {settings.min_alert_amount.toLocaleString("id-ID")}
               </span>
             </p>
 
-            {(amount ?? 0) > 0 && (amount ?? 0) < settings.minAlertAmount && (
+            {(amount ?? 0) > 0 && (amount ?? 0) < settings.min_alert_amount && (
               <div className="mt-2 bg-red-50 text-red-600 px-3 py-2 rounded-xl text-[10px] font-bold flex items-start gap-2 border border-red-100 animate-in fade-in slide-in-from-top-1">
                 <span className="text-lg leading-none">⚠️</span>
                 <span className="leading-tight">
                   Hadiah kamu tidak akan tampil di alert kreator karena jumlahnya kurang dari IDR{" "}
-                  {settings.minAlertAmount.toLocaleString("id-ID")}
+                  {settings.min_alert_amount.toLocaleString("id-ID")}
                 </span>
               </div>
             )}
@@ -207,7 +207,7 @@ export function DonationForm({ onSuccess, settings }: DonationFormProps) {
 
           {activeTab !== "sound" && (
             <div className="grid grid-cols-3 gap-2">
-              {settings.fastAmounts.map((amt) => (
+              {settings.fast_amounts.map((amt) => (
                 <button
                   key={amt}
                   type="button"

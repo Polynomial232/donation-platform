@@ -19,7 +19,7 @@ import { discoveryService } from "@/services/discovery";
 import { CreatorDetailResponse, CreatorSection } from "@/types/discovery";
 
 function isSectionVisible(section: CreatorSection): boolean {
-  if (!section.isEnabled) return false;
+  if (!section.is_enabled) return false;
 
   const { data } = section;
   if (!data) return false;
@@ -115,7 +115,7 @@ export default function CreatorPage() {
     return notFound();
   }
 
-  const { profile, settings, soundBoard } = data;
+  const { profile, settings, sound_board: soundBoard } = data;
 
   return (
     <main className="min-h-screen bg-[var(--color-off-white)] pb-12">
@@ -127,12 +127,12 @@ export default function CreatorPage() {
           <div className={`space-y-6 ${hasVisibleRightSections ? "lg:col-span-8" : ""}`}>
             <ProfileHeader
               username={profile.username}
-              displayName={profile.displayName}
+              displayName={profile.display_name}
               bio={profile.bio}
-              avatarUrl={profile.avatarUrl}
-              bannerUrl={profile.bannerUrl}
-              isLive={profile.isLive}
-              isVerified={profile.isVerified}
+              avatarUrl={profile.avatar_url}
+              bannerUrl={profile.banner_url}
+              isLive={profile.is_live}
+              isVerified={profile.is_verified}
             />
 
             {/* Dynamic Left Sections */}

@@ -32,7 +32,7 @@ export function DonationWrapper({ settings, soundBoard }: DonationWrapperProps) 
     resolver: zodResolver(donationSchema),
     defaultValues: {
       activeTab: "gift",
-      amount: settings.minAlertAmount || settings.fastAmounts[0] || 10000,
+      amount: settings.min_alert_amount || settings.fast_amounts[0] || 10000,
       isEmailPrivate: false,
       senderName: "",
       email: "",
@@ -61,13 +61,13 @@ export function DonationWrapper({ settings, soundBoard }: DonationWrapperProps) 
       <div id="donation-form" className="space-y-6">
         <DonationForm settings={settings} />
 
-        {settings.isMediaShareEnabled && activeTab === "gift" && (
+        {settings.is_media_share_enabled && activeTab === "gift" && (
           <div className="animate-in fade-in slide-in-from-top-4 duration-300">
-            <MediaShareForm />
+            <MediaShareForm settings={settings} amount={amount} />
           </div>
         )}
 
-        {settings.isSoundEnabled && activeTab === "sound" && (
+        {settings.is_sound_enabled && activeTab === "sound" && (
           <div className="animate-in fade-in slide-in-from-top-4 duration-300">
             <SoundList
               data={soundBoard}

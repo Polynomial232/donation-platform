@@ -36,4 +36,8 @@ export const discoveryService = {
     const response = await api.get(`/discovery/creators/${username}`);
     return response.data;
   },
+  getAuthSettings: async () => {
+    const response = await api.get("/discovery/auth-settings");
+    return response.data;
+  },
 };

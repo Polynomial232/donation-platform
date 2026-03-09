@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Shield, Sword, Users, ChevronRight } from "lucide-react";
 
 export function GoalsWidget({ data, title }: { data?: any; title?: string }) {
-  const currentAmount = data?.currentAmount || 0;
-  const targetAmount = data?.targetAmount || 0;
+  const currentAmount = data?.current_amount || 0;
+  const targetAmount = data?.target_amount || 0;
 
   // Use the percentage from the API if provided, otherwise calculate it
   const progress =
@@ -62,7 +62,7 @@ export function GoalsWidget({ data, title }: { data?: any; title?: string }) {
         <div className="mt-5 pt-4 border-t border-slate-50 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="flex -space-x-2">
-              {Array.from({ length: Math.min(data?.participantsCount ?? 0, 3) }).map((_, i) => (
+              {Array.from({ length: Math.min(data?.participants_count ?? 0, 3) }).map((_, i) => (
                 <div
                   key={i}
                   className="w-6 h-6 rounded-full border-2 border-white bg-slate-200 overflow-hidden relative"
@@ -70,12 +70,13 @@ export function GoalsWidget({ data, title }: { data?: any; title?: string }) {
                   <img
                     src={`https://i.pravatar.cc/48?img=${i + 1}`}
                     className="object-cover w-full h-full"
+                    alt="participant"
                   />
                 </div>
               ))}
             </div>
             <span className="text-[10px] text-slate-400 font-bold ml-1">
-              +{data?.participantsCount ?? 0} Heroes joined
+              +{data?.participants_count ?? 0} Heroes joined
             </span>
           </div>
 
