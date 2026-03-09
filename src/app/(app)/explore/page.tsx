@@ -147,8 +147,8 @@ function ExploreContent() {
     icon: <Palette className="text-[var(--color-deep-purple)]" size={32} />,
   });
 
-  const trendingCreators = data.trending?.map(mapCreator) || [];
-  const recommendedCreators = data.recommended?.map(mapCreator) || [];
+  const trendingCreators = data.trending_creators?.map(mapCreator) || [];
+  const recommendedCreators = data.recommended_creators?.map(mapCreator) || [];
   const categories = data.categories || ["All Creators"];
 
   const allPaginatedCreators =
