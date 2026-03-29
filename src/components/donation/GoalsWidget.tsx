@@ -17,20 +17,20 @@ export function GoalsWidget({ data, title }: { data?: any; title?: string }) {
         : 0;
 
   return (
-    <Card className="border-none shadow-[0_4px_20px_-2px_rgba(0,0,0,0.04),0_2px_8px_-1px_rgba(0,0,0,0.02)] rounded-2xl overflow-hidden relative">
+    <Card className="border border-slate-100 shadow-sm rounded-3xl overflow-hidden relative bg-white">
       {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5 bg-[radial-gradient(#6d28d9_1px,transparent_1px)] [background-size:16px_16px]"></div>
+      <div className="absolute inset-0 opacity-5 bg-[radial-gradient(var(--color-deep-purple)_1px,transparent_1px)] bg-size-[16px_16px]"></div>
 
-      <div className="p-5 relative z-10">
+      <div className="p-6 relative z-10">
         <div className="flex items-start justify-between mb-4">
           <div className="flex gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[var(--color-pastel-purple)] flex items-center justify-center text-[var(--color-deep-purple)] shadow-sm border border-purple-100">
+            <div className="w-10 h-10 rounded-xl bg-(--color-pastel-purple) flex items-center justify-center text-(--color-deep-purple) shadow-sm border border-purple-100">
               <Shield size={20} className="fill-purple-200" />
             </div>
             <div>
               <h3 className="text-sm font-extrabold text-slate-900 flex items-center gap-1.5">
                 {title || "Community Quest"}
-                <span className="bg-[var(--color-pastel-purple)] text-[var(--color-deep-purple)] text-[10px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wide">
+                <span className="bg-(--color-pastel-purple) text-(--color-deep-purple) text-[10px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wide">
                   Quest
                 </span>
               </h3>
@@ -42,7 +42,7 @@ export function GoalsWidget({ data, title }: { data?: any; title?: string }) {
         {/* Progress Bar */}
         <div className="space-y-2">
           <div className="flex justify-between text-xs font-bold">
-            <span className="text-[var(--color-deep-purple)]">{progress}% Completed</span>
+            <span className="text-(--color-deep-purple)">{progress}% Completed</span>
             <span className="text-slate-400">
               IDR {currentAmount.toLocaleString("id-ID")} / IDR{" "}
               {targetAmount.toLocaleString("id-ID")}
@@ -50,10 +50,10 @@ export function GoalsWidget({ data, title }: { data?: any; title?: string }) {
           </div>
           <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden border border-slate-100">
             <div
-              className="h-full bg-[var(--color-accent-yellow)] rounded-full relative overflow-hidden transition-all duration-1000 ease-out"
+              className="h-full bg-(--color-accent-yellow) rounded-full relative overflow-hidden transition-all duration-1000 ease-out"
               style={{ width: `${progress}%` }}
             >
-              <div className="absolute inset-0 bg-white/30 w-full h-full animate-[shimmer_2s_infinite] skew-x-12 translate-x-[-100%]"></div>
+              <div className="absolute inset-0 bg-white/30 w-full h-full animate-[shimmer_2s_infinite] skew-x-12 -translate-x-full"></div>
             </div>
           </div>
         </div>
@@ -82,7 +82,7 @@ export function GoalsWidget({ data, title }: { data?: any; title?: string }) {
 
           <Button
             size="sm"
-            className="h-8 bg-[var(--color-deep-purple)] hover:bg-[var(--color-deep-purple)]/90 text-white font-bold text-xs rounded-xl shadow-lg shadow-purple-200"
+            className="h-8 bg-(--color-deep-purple) hover:bg-deep-purple/90 text-white font-bold text-xs rounded-xl shadow-lg shadow-purple-200 transition-transform hover:scale-105 active:scale-95 px-4"
             onClick={() => {
               const element = document.getElementById("donation-form");
               if (element) {

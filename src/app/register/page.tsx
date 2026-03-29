@@ -12,26 +12,27 @@ import * as z from "zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { BGPattern } from "@/components/ui/bg-pattern";
 import toast from "react-hot-toast";
 
 const registerSchema = z
   .object({
     username: z
       .string()
-      .min(3, "Username must be at least 3 characters")
-      .regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores"),
-    email: z.string().email("Please enter a valid email address"),
+      .min(3, "Royal Handle must be at least 3 characters")
+      .regex(/^[a-zA-Z0-9_]+$/, "Royal Handle can only contain letters, numbers, and underscores"),
+    email: z.string().email("Please enter a valid dispatch address"),
     password: z
       .string()
-      .min(8, "Password must be at least 8 characters")
-      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-      .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-      .regex(/[0-9]/, "Password must contain at least one number")
-      .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character"),
+      .min(8, "Passkey must be at least 8 characters")
+      .regex(/[A-Z]/, "Passkey must contain at least one uppercase letter")
+      .regex(/[a-z]/, "Passkey must contain at least one lowercase letter")
+      .regex(/[0-9]/, "Passkey must contain at least one number")
+      .regex(/[^A-Za-z0-9]/, "Passkey must contain at least one special character"),
     password_confirmation: z.string(),
   })
   .refine((data) => data.password === data.password_confirmation, {
-    message: "Passwords do not match",
+    message: "Passkeys do not match",
     path: ["password_confirmation"],
   });
 
@@ -69,14 +70,14 @@ export default function RegisterPage() {
       });
 
       if (response.status_code === 201 || response.status_code === 200) {
-        toast.success(response.message || "Pendaftaran Berhasil!");
+        toast.success(response.message || "Enlistment Successful!");
         router.push("/register/success");
       } else {
-        throw new Error(response.message || "Pendaftaran gagal");
+        throw new Error(response.message || "Enlistment failed");
       }
     } catch (error: any) {
       toast.error(
-        error?.response?.data?.message || error.message || "Pendaftaran gagal. Silakan coba lagi."
+        error?.response?.data?.message || error.message || "Enlistment failed. Please try again."
       );
     } finally {
       setIsLoading(false);
@@ -84,32 +85,46 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-(--color-off-white) p-4">
-      <div className="w-full max-w-md space-y-6">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4 relative overflow-hidden">
+      {/* Premium Background Pattern */}
+      <BGPattern
+        variant="grid"
+        size={32}
+        fill="rgba(0,0,0,0.04)"
+        className="fixed inset-0 z-0 pointer-events-none"
+      />
+
+      {/* Decorative Glowing Blobs */}
+      <div className="fixed top-[-10%] left-[-10%] w-[60%] h-[50%] rounded-full bg-(--color-pastel-purple) mix-blend-multiply blur-[120px] opacity-40 z-0 pointer-events-none"></div>
+      <div className="fixed bottom-[10%] right-[-10%] w-[50%] h-[60%] rounded-full bg-(--color-pastel-yellow) mix-blend-multiply blur-[120px] opacity-30 z-0 pointer-events-none"></div>
+
+      <div className="w-full max-w-md space-y-6 relative z-10">
         <div className="text-center space-y-2">
           <Link href="/" className="inline-flex items-center gap-2 mb-4">
-            <div className="w-10 h-10 bg-(--color-accent-yellow) rounded-xl flex items-center justify-center text-(--color-deep-purple) font-black text-xl shadow-sm">
-              D
+            <div className="w-10 h-10 bg-(--color-accent-yellow) rounded-xl flex items-center justify-center text-(--color-deep-purple) font-black text-xl shadow-sm uppercase">
+              {process.env.NEXT_PUBLIC_APP_NAME?.charAt(0) || "D"}
             </div>
-            <span className="font-bold text-2xl tracking-tight text-slate-900">DukuNasia</span>
+            <span className="font-bold text-2xl tracking-tight text-slate-900">
+              {process.env.NEXT_PUBLIC_APP_NAME || "DukuNasia"}
+            </span>
           </Link>
-          <h1 className="text-2xl font-extrabold text-slate-900">Daftar Akun Baru</h1>
+          <h1 className="text-2xl font-extrabold text-slate-900">Enlist for thy Royal Scroll</h1>
           <p className="text-slate-500 font-medium text-sm">
-            Mulai dukungan dan dapatkan penghasilan dari konten kamu hari ini.
+            Become a sovereign of the realm and start receiving tributes today.
           </p>
         </div>
 
-        <Card className="p-8 border-none shadow-lg bg-white rounded-3xl">
+        <Card className="p-8 border-none shadow-xl bg-white/70 backdrop-blur-xl rounded-3xl border border-white/50">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-600 uppercase tracking-wider ml-1">
-                Username
+                Royal Handle
               </label>
               <input
                 {...register("username")}
                 type="text"
                 className={`w-full bg-slate-50 border ${
-                  errors.username ? "border-red-400 ring-1 ring-red-400" : "border-slate-200"
+                  errors.username ? "border-red-400 ring-1 ring-red-400" : "border-slate-100"
                 } rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-(--color-pastel-purple) outline-none font-medium transition-all`}
                 placeholder="GamingWarrior"
               />
@@ -122,15 +137,15 @@ export default function RegisterPage() {
 
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-600 uppercase tracking-wider ml-1">
-                Email
+                Dispatch Address
               </label>
               <input
                 {...register("email")}
                 type="email"
                 className={`w-full bg-slate-50 border ${
-                  errors.email ? "border-red-400 ring-1 ring-red-400" : "border-slate-200"
+                  errors.email ? "border-red-400 ring-1 ring-red-400" : "border-slate-100"
                 } rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-(--color-pastel-purple) outline-none font-medium transition-all`}
-                placeholder="anda@email.com"
+                placeholder="thy@email.com"
               />
               {errors.email && (
                 <p className="text-[10px] text-red-500 font-bold ml-1 uppercase">
@@ -141,14 +156,14 @@ export default function RegisterPage() {
 
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-600 uppercase tracking-wider ml-1">
-                Password
+                Secret Passkey
               </label>
               <div className="relative group">
                 <input
                   {...register("password")}
                   type={showPassword ? "text" : "password"}
                   className={`w-full bg-slate-50 border ${
-                    errors.password ? "border-red-400 ring-1 ring-red-400" : "border-slate-200"
+                    errors.password ? "border-red-400 ring-1 ring-red-400" : "border-slate-100"
                   } rounded-xl px-4 py-3 pr-12 text-sm focus:ring-2 focus:ring-(--color-pastel-purple) outline-none font-medium transition-all`}
                   placeholder="••••••••"
                 />
@@ -166,14 +181,14 @@ export default function RegisterPage() {
                 </p>
               ) : (
                 <p className="text-[10px] text-slate-400 font-medium ml-1">
-                  Minimal 8 karakter dengan huruf besar, kecil, angka, dan simbol.
+                  Min. 8 characters with upper, lower, number, and symbol.
                 </p>
               )}
             </div>
 
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-600 uppercase tracking-wider ml-1">
-                Konfirmasi Password
+                Verify Passkey
               </label>
               <div className="relative group">
                 <input
@@ -182,7 +197,7 @@ export default function RegisterPage() {
                   className={`w-full bg-slate-50 border ${
                     errors.password_confirmation
                       ? "border-red-400 ring-1 ring-red-400"
-                      : "border-slate-200"
+                      : "border-slate-100"
                   } rounded-xl px-4 py-3 pr-12 text-sm focus:ring-2 focus:ring-(--color-pastel-purple) outline-none font-medium transition-all`}
                   placeholder="••••••••"
                 />
@@ -204,15 +219,15 @@ export default function RegisterPage() {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full rounded-xl py-6 font-bold text-base shadow-lg shadow-yellow-100 bg-(--color-accent-yellow) text-(--color-deep-purple) hover:bg-(--color-pastel-yellow)"
+              className="w-full rounded-xl py-6 font-bold text-base shadow-lg shadow-purple-500/10 bg-(--color-accent-yellow) text-(--color-deep-purple) hover:bg-(--color-pastel-yellow)"
             >
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Memproses...
+                  Recording enlistment...
                 </>
               ) : (
-                "Daftar Sekarang"
+                "Enlist Now"
               )}
             </Button>
           </form>
@@ -223,32 +238,37 @@ export default function RegisterPage() {
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-slate-100"></div>
                 </div>
-                <div className="relative flex justify-center text-[10px] uppercase tracking-widest">
-                  <span className="bg-white px-3 text-slate-400 font-black">
-                    Atau daftar dengan
+                <div className="relative flex justify-center text-[10px] uppercase tracking-widest text-slate-400">
+                  <span className="bg-white/50 backdrop-blur-md px-3 font-black">
+                    Or enlist through other realms
                   </span>
                 </div>
               </div>
 
-              <Button
-                variant="outline"
-                className="w-full rounded-xl py-6 font-bold gap-3 border-slate-200 text-slate-700 hover:bg-slate-50"
-              >
-                <img
-                  src="https://www.svgrepo.com/show/475656/google-color.svg"
-                  className="w-5 h-5"
-                  alt="Google"
-                />
-                Google
-              </Button>
+              <div className="flex flex-col gap-3">
+                <Button
+                  variant="outline"
+                  className="w-full rounded-xl py-6 font-bold gap-3 border-slate-100 bg-white/50 hover:bg-slate-50 transition-all"
+                >
+                  <img
+                    src="https://www.svgrepo.com/show/475656/google-color.svg"
+                    className="w-5 h-5"
+                    alt="Google"
+                  />
+                  Enlist with Google
+                </Button>
+              </div>
             </>
           )}
         </Card>
 
         <p className="text-center text-sm font-medium text-slate-500">
-          Sudah punya akun?{" "}
-          <Link href="/login" className="text-(--color-deep-purple) font-extrabold hover:underline">
-            Masuk di sini
+          Already a sovereign?{" "}
+          <Link
+            href="/login"
+            className="text-(--color-deep-purple) font-extrabold hover:underline transition-all"
+          >
+            Enter the Gates
           </Link>
         </p>
       </div>

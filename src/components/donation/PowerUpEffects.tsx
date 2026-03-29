@@ -5,17 +5,11 @@ export function PowerUpEffects() {
   return (
     <Card className="p-6 relative overflow-hidden border-none shadow-sm">
       <div className="absolute -top-6 -right-6 opacity-5">
-        <Zap
-          size={120}
-          className="text-[var(--color-accent-purple)] fill-[var(--color-accent-purple)]"
-        />
+        <Zap size={120} className="text-(--color-accent-purple) fill-(--color-accent-purple)" />
       </div>
       <div className="flex items-center gap-2 mb-4">
-        <div className="w-8 h-8 rounded-full bg-[var(--color-pastel-purple)] flex items-center justify-center">
-          <Zap
-            size={14}
-            className="text-[var(--color-deep-purple)] fill-[var(--color-deep-purple)]"
-          />
+        <div className="w-8 h-8 rounded-full bg-(--color-pastel-purple) flex items-center justify-center">
+          <Zap size={14} className="text-(--color-deep-purple) fill-(--color-deep-purple)" />
         </div>
         <h3 className="font-bold text-sm text-slate-800">Power Up Effects</h3>
       </div>

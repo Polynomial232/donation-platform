@@ -34,49 +34,49 @@ export function DonationForm({ onSuccess, settings }: DonationFormProps) {
   const showTabs = settings.is_sound_enabled; // Hide tabs if sound is disabled (assuming Gift is always the default)
 
   return (
-    <Card className="overflow-hidden border-none shadow-sm">
+    <Card className="overflow-hidden border border-slate-100 shadow-sm rounded-3xl bg-white">
       {settings.is_sound_enabled && (
-        <div className="flex p-2 gap-1 bg-slate-50/50">
+        <div className="flex p-2 gap-2 bg-slate-50/80 border-b border-slate-100">
           <button
             type="button"
             onClick={() => setValue("activeTab", "gift")}
             className={cn(
-              "flex-1 py-3 px-2 rounded-2xl font-bold text-xs flex flex-col items-center gap-1 transition-all",
+              "flex-1 py-3 px-2 rounded-2xl font-bold text-xs flex flex-col items-center gap-1.5 transition-all outline-none focus-visible:ring-2 focus-visible:ring-(--color-deep-purple)",
               activeTab === "gift"
-                ? "bg-white shadow-sm text-slate-900"
-                : "text-slate-400 hover:bg-white/50"
+                ? "bg-white shadow-sm border border-slate-100 text-slate-900"
+                : "text-slate-400 hover:text-slate-600 hover:bg-white/40 border border-transparent"
             )}
           >
             <Gift
               className={cn(
                 "w-6 h-6",
-                activeTab === "gift" ? "text-[var(--color-deep-purple)]" : "text-slate-400"
+                activeTab === "gift" ? "text-(--color-deep-purple)" : "text-slate-400"
               )}
             />
-            <span>Hadiah</span>
+            <span>Tribute</span>
             {activeTab === "gift" && (
-              <div className="h-1 w-4 rounded-full bg-[var(--color-accent-yellow)] mt-1"></div>
+              <div className="h-1 w-4 rounded-full bg-(--color-accent-yellow) mt-1"></div>
             )}
           </button>
           <button
             type="button"
             onClick={() => setValue("activeTab", "sound")}
             className={cn(
-              "flex-1 py-3 px-2 rounded-2xl font-bold text-xs flex flex-col items-center gap-1 transition-all",
+              "flex-1 py-3 px-2 rounded-2xl font-bold text-xs flex flex-col items-center gap-1.5 transition-all outline-none focus-visible:ring-2 focus-visible:ring-(--color-deep-purple)",
               activeTab === "sound"
-                ? "bg-white shadow-sm text-slate-900"
-                : "text-slate-400 hover:bg-white/50"
+                ? "bg-white shadow-sm border border-slate-100 text-slate-900"
+                : "text-slate-400 hover:text-slate-600 hover:bg-white/40 border border-transparent"
             )}
           >
             <Volume2
               className={cn(
                 "w-6 h-6",
-                activeTab === "sound" ? "text-[var(--color-deep-purple)]" : "text-slate-400"
+                activeTab === "sound" ? "text-(--color-deep-purple)" : "text-slate-400"
               )}
             />
-            <span>Sound</span>
+            <span>Royal Fanfare</span>
             {activeTab === "sound" && (
-              <div className="h-1 w-4 rounded-full bg-[var(--color-accent-yellow)] mt-1"></div>
+              <div className="h-1 w-4 rounded-full bg-(--color-accent-yellow) mt-1"></div>
             )}
           </button>
         </div>
@@ -86,17 +86,17 @@ export function DonationForm({ onSuccess, settings }: DonationFormProps) {
         <div className="space-y-4">
           <div>
             <label className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">
-              Nama Pengirim
+              Noble Contributor
             </label>
             <input
               type="text"
               {...register("senderName")}
-              placeholder="Siluman Taplak Meja"
+              placeholder="The Wandering Knight"
               className={cn(
                 "w-full bg-slate-50 border-none rounded-2xl px-4 py-3 text-sm focus:ring-2 transition-all outline-none font-medium placeholder:text-slate-300 text-slate-800",
                 errors.senderName
                   ? "ring-2 ring-red-100 placeholder:text-red-200"
-                  : "focus:ring-[var(--color-pastel-purple)]"
+                  : "focus:ring-(--color-pastel-purple)"
               )}
             />
             {errors.senderName && (
@@ -116,7 +116,7 @@ export function DonationForm({ onSuccess, settings }: DonationFormProps) {
                 className={cn(
                   "w-full bg-slate-50 border-none rounded-2xl px-4 py-3 text-sm focus:ring-2 transition-all outline-none font-medium placeholder:text-slate-300 text-slate-800",
                   isEmailPrivate && "blur-[3px] focus:blur-none transition-all duration-300",
-                  errors.email ? "ring-2 ring-red-100" : "focus:ring-[var(--color-pastel-purple)]"
+                  errors.email ? "ring-2 ring-red-100" : "focus:ring-(--color-pastel-purple)"
                 )}
               />
               {errors.email && (
@@ -131,14 +131,14 @@ export function DonationForm({ onSuccess, settings }: DonationFormProps) {
                   className={cn(
                     "text-xs font-bold transition-colors flex items-center gap-1.5",
                     isEmailPrivate
-                      ? "text-[var(--color-deep-purple)]"
+                      ? "text-(--color-deep-purple)"
                       : "text-slate-400 group-hover:text-slate-600"
                   )}
                 >
                   {isEmailPrivate ? <EyeOff size={14} /> : <Eye size={14} />}
                   {isEmailPrivate
-                    ? "Email disembunyikan dari Creator"
-                    : "Sembunyikan email dari Creator"}
+                    ? "Email concealed from Sovereign"
+                    : "Conceal email from Sovereign"}
                 </span>
               </div>
             </div>
@@ -146,23 +146,23 @@ export function DonationForm({ onSuccess, settings }: DonationFormProps) {
 
           <div>
             <label className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">
-              Pesan Dukungan
+              Imperial Message
             </label>
             <textarea
               rows={3}
               {...register("message")}
-              placeholder="Semangat terus kontennya! ✨"
-              className="w-full bg-slate-50 border-none rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-[var(--color-pastel-purple)] transition-all resize-none outline-none font-medium placeholder:text-slate-300 text-slate-800"
+              placeholder="Long live the Sovereign! ✨"
+              className="w-full bg-slate-50 border-none rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-(--color-pastel-purple) transition-all resize-none outline-none font-medium placeholder:text-slate-300 text-slate-800"
             ></textarea>
           </div>
 
           <div>
             <label className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">
-              Jumlah Hadiah
+              Tribute Amount
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <span className="text-[var(--color-deep-purple)] font-bold text-sm bg-[var(--color-pastel-purple)] px-2 py-0.5 rounded-md">
+                <span className="text-(--color-deep-purple) font-bold text-sm bg-(--color-pastel-purple) px-2 py-0.5 rounded-md">
                   IDR
                 </span>
               </div>
@@ -177,7 +177,7 @@ export function DonationForm({ onSuccess, settings }: DonationFormProps) {
                 disabled={activeTab === "sound"}
                 placeholder="0"
                 className={cn(
-                  "w-full bg-slate-50 border-none rounded-2xl pl-16 pr-4 py-4 text-xl font-bold text-slate-900 focus:ring-2 focus:ring-[var(--color-pastel-purple)] outline-none",
+                  "w-full bg-slate-50 border-none rounded-2xl pl-16 pr-4 py-4 text-xl font-bold text-slate-900 focus:ring-2 focus:ring-(--color-pastel-purple) outline-none",
                   activeTab === "sound" &&
                     "opacity-60 cursor-not-allowed bg-slate-100 text-slate-500"
                 )}
@@ -188,7 +188,7 @@ export function DonationForm({ onSuccess, settings }: DonationFormProps) {
             )}
 
             <p className="text-[10px] text-slate-400 font-bold mt-1 ml-1">
-              Jumlah Minimum Muncul di Alert:{" "}
+              Minimum Gold for Imperial Shout:{" "}
               <span className="text-slate-600">
                 IDR {settings.min_alert_amount.toLocaleString("id-ID")}
               </span>
@@ -198,7 +198,7 @@ export function DonationForm({ onSuccess, settings }: DonationFormProps) {
               <div className="mt-2 bg-red-50 text-red-600 px-3 py-2 rounded-xl text-[10px] font-bold flex items-start gap-2 border border-red-100 animate-in fade-in slide-in-from-top-1">
                 <span className="text-lg leading-none">⚠️</span>
                 <span className="leading-tight">
-                  Hadiah kamu tidak akan tampil di alert kreator karena jumlahnya kurang dari IDR{" "}
+                  Thy tribute shall not echo in the Sovereign&apos;s court as it is less than IDR{" "}
                   {settings.min_alert_amount.toLocaleString("id-ID")}
                 </span>
               </div>
@@ -215,7 +215,7 @@ export function DonationForm({ onSuccess, settings }: DonationFormProps) {
                   className={cn(
                     "py-3 rounded-2xl text-[11px] font-medium transition-all",
                     amount === amt
-                      ? "bg-[var(--color-pastel-yellow)] text-[var(--color-deep-purple)] font-bold ring-2 ring-[var(--color-accent-yellow)] ring-offset-2"
+                      ? "bg-(--color-pastel-yellow) text-(--color-deep-purple) font-bold ring-2 ring-(--color-accent-yellow) ring-offset-2"
                       : "bg-white border border-slate-100 text-slate-600 hover:bg-slate-50"
                   )}
                 >

@@ -37,10 +37,12 @@ function ActivationContent() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2">
-            <div className="w-10 h-10 bg-(--color-accent-yellow) rounded-xl flex items-center justify-center text-(--color-deep-purple) font-black text-xl shadow-sm">
-              D
+            <div className="w-10 h-10 bg-(--color-accent-yellow) rounded-xl flex items-center justify-center text-(--color-deep-purple) font-black text-xl shadow-sm uppercase">
+              {process.env.NEXT_PUBLIC_APP_NAME?.charAt(0) || "D"}
             </div>
-            <span className="font-bold text-2xl tracking-tight text-slate-900">DukuNasia</span>
+            <span className="font-bold text-2xl tracking-tight text-slate-900">
+              {process.env.NEXT_PUBLIC_APP_NAME || "DukuNasia"}
+            </span>
           </Link>
         </div>
 

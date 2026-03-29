@@ -105,6 +105,7 @@ const fullLeaderboard = [
 ];
 
 interface Supporter {
+  id: string;
   name: string;
   amount: string;
   avatar: string;
@@ -116,7 +117,8 @@ export function LeaderboardWidget({ data }: { data?: any[] }) {
 
   // Map API data to component data
   const supporters: Supporter[] = (data || []).map((item, index) => ({
-    name: item.donor_name || "Anonymous",
+    id: item.id || Math.random().toString(),
+    name: item.donor_name || "Nameless Knight",
     amount: `IDR ${item.total_amount?.toLocaleString("id-ID") || 0}`,
     avatar: item.avatar_url || "https://i.imgur.com/1Z3MVNG.jpeg",
     rank: index + 1,
@@ -127,7 +129,7 @@ export function LeaderboardWidget({ data }: { data?: any[] }) {
 
   const SupporterItem = ({ supporter }: { supporter: Supporter }) => (
     <div className="flex items-center gap-3 p-3 hover:bg-slate-50 rounded-xl transition-colors">
-      <div className="flex-shrink-0 w-6 text-center font-bold text-slate-400 text-xs">
+      <div className="shrink-0 w-6 text-center font-bold text-slate-400 text-xs">
         {supporter.rank === 1 && (
           <Crown size={20} className="text-yellow-500 mx-auto" fill="currentColor" />
         )}
@@ -135,29 +137,29 @@ export function LeaderboardWidget({ data }: { data?: any[] }) {
         {supporter.rank === 3 && <Medal size={20} className="text-amber-700 mx-auto" />}
         {supporter.rank > 3 && `#${supporter.rank}`}
       </div>
-      <div className="w-9 h-9 rounded-full bg-slate-100 overflow-hidden relative border border-slate-100 flex-shrink-0">
+      <div className="w-9 h-9 rounded-full bg-slate-100 overflow-hidden relative border border-slate-100 shrink-0">
         <Image src={supporter.avatar} alt={supporter.name} fill className="object-cover" />
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-xs font-bold text-slate-900 truncate">{supporter.name}</p>
-        <p className="text-[10px] text-[var(--color-deep-purple)] font-bold">{supporter.amount}</p>
+        <p className="text-[10px] text-purple-800 font-bold">{supporter.amount}</p>
       </div>
     </div>
   );
 
   return (
     <>
-      <Card className="border-none shadow-[0_4px_20px_-2px_rgba(0,0,0,0.04),0_2px_8px_-1px_rgba(0,0,0,0.02)] rounded-2xl overflow-hidden">
-        <div className="bg-[var(--color-accent-yellow)] px-4 py-3 flex items-center gap-2">
-          <Trophy size={16} className="text-[var(--color-deep-purple)]" fill="currentColor" />
-          <h3 className="text-xs font-black text-[var(--color-deep-purple)] uppercase tracking-widest">
-            Top Supporters
-          </h3>
+      <Card className="border border-slate-100 shadow-sm rounded-3xl overflow-hidden bg-white">
+        <div className="bg-slate-50/80 px-5 py-4 flex items-center gap-3 border-b border-slate-100">
+          <div className="w-8 h-8 rounded-xl bg-purple-100 flex items-center justify-center shrink-0">
+            <Trophy size={16} className="text-purple-800" fill="currentColor" />
+          </div>
+          <h1 className="text-sm font-extrabold text-slate-900 tracking-tight">Royal Champions</h1>
         </div>
         <div className="p-2">
           {topSupportersList.length > 0 ? (
             topSupportersList.map((supporter, index) => (
-              <SupporterItem key={index} supporter={supporter} />
+              <SupporterItem key={supporter.id} supporter={supporter} />
             ))
           ) : (
             <div className="p-8 text-center">
@@ -166,22 +168,22 @@ export function LeaderboardWidget({ data }: { data?: any[] }) {
           )}
         </div>
         {fullLeaderboardList.length > 5 && (
-          <div className="p-3 border-t border-slate-50 text-center">
+          <div className="p-3 border-t border-slate-100 text-center bg-slate-50/50">
             <button
               onClick={() => setIsViewAllOpen(true)}
-              className="text-[10px] font-bold text-slate-400 hover:text-[var(--color-deep-purple)] transition-colors uppercase tracking-widest"
+              className="text-[11px] font-bold text-slate-500 hover:text-(--color-deep-purple) transition-colors tracking-wide"
             >
-              View All Sultans
+              Consult all records
             </button>
           </div>
         )}
       </Card>
 
-      <Modal isOpen={isViewAllOpen} onClose={() => setIsViewAllOpen(false)} title="Top Sultans">
+      <Modal isOpen={isViewAllOpen} onClose={() => setIsViewAllOpen(false)} title="Tribute Records">
         <ScrollArea className="h-[400px] pr-4">
           <div className="space-y-1">
             {fullLeaderboardList.map((supporter, index) => (
-              <SupporterItem key={index} supporter={supporter} />
+              <SupporterItem key={supporter.id} supporter={supporter} />
             ))}
           </div>
         </ScrollArea>

@@ -62,7 +62,7 @@ export function RecentActivityWidget({ data }: { data?: any[] }) {
     <Card className="border-none shadow-[0_4px_20px_-2px_rgba(0,0,0,0.04),0_2px_8px_-1px_rgba(0,0,0,0.02)] rounded-2xl overflow-hidden">
       <div className="px-4 py-3 border-b border-slate-50 flex items-center justify-between">
         <h3 className="text-xs font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
-          <Zap size={14} className="text-[var(--color-accent-yellow)] fill-current" />
+          <Zap size={14} className="text-(--color-accent-yellow) fill-current" />
           Live Activity
         </h3>
         <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
@@ -80,7 +80,7 @@ export function RecentActivityWidget({ data }: { data?: any[] }) {
               <div>
                 <p className="text-xs text-slate-600">
                   <span className="font-bold text-slate-900">{activity.user}</span> donated{" "}
-                  <span className="font-bold text-[var(--color-deep-purple)]">
+                  <span className="font-bold text-(--color-deep-purple)">
                     IDR {activity.amount.toLocaleString("id-ID")}
                   </span>
                 </p>

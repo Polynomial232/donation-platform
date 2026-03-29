@@ -11,10 +11,12 @@ export default function RegisterSuccessPage() {
       <div className="w-full max-w-md space-y-6">
         <div className="text-center space-y-2">
           <Link href="/" className="inline-flex items-center gap-2 mb-4">
-            <div className="w-10 h-10 bg-(--color-accent-yellow) rounded-xl flex items-center justify-center text-(--color-deep-purple) font-black text-xl shadow-sm">
-              D
+            <div className="w-10 h-10 bg-(--color-accent-yellow) rounded-xl flex items-center justify-center text-(--color-deep-purple) font-black text-xl shadow-sm uppercase">
+              {process.env.NEXT_PUBLIC_APP_NAME?.charAt(0) || "D"}
             </div>
-            <span className="font-bold text-2xl tracking-tight text-slate-900">DukuNasia</span>
+            <span className="font-bold text-2xl tracking-tight text-slate-900">
+              {process.env.NEXT_PUBLIC_APP_NAME || "DukuNasia"}
+            </span>
           </Link>
         </div>
 

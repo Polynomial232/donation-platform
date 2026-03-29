@@ -4,9 +4,19 @@ import * as React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Building2, CreditCard, MoreVertical, Trash2, Pencil, Save } from "lucide-react";
+import {
+  RiBankLine,
+  RiWallet3Line,
+  RiAddLine,
+  RiMore2Fill,
+  RiDeleteBin6Line,
+  RiEditLine,
+  RiSaveLine,
+  RiStarFill,
+  RiCheckboxCircleFill,
+  RiInformationLine,
+} from "@remixicon/react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,6 +24,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Modal } from "@/components/ui/modal";
+import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { DestinationCard } from "@/components/ui/destination-card";
 
 const payoutAccountSchema = z.object({
   type: z.enum(["bank", "ewallet"]),
@@ -34,35 +48,71 @@ interface PayoutAccount {
 }
 
 export default function PayoutsPage() {
-  // Mock Data
-  const accounts: PayoutAccount[] = [
+  // Reactive State for Accounts
+  const [accounts, setAccounts] = React.useState<PayoutAccount[]>([
     {
       id: "1",
       type: "bank",
-      providerName: "BCA",
-      accountNumber: "1234567890",
-      accountHolder: "GamingWarrior Official",
+      providerName: "BANK CENTRAL ASIA",
+      accountNumber: "1234 5678 9010",
+      accountHolder: "DAFFA ARYANTA",
       isPrimary: true,
     },
     {
       id: "2",
       type: "ewallet",
-      providerName: "Gopay",
-      accountNumber: "081234567890",
-      accountHolder: "GamingWarrior",
+      providerName: "GOPAY DIGITAL",
+      accountNumber: "0812 3456 7890",
+      accountHolder: "DAFFA ARYANTA",
       isPrimary: false,
     },
     {
       id: "3",
       type: "bank",
-      providerName: "Mandiri",
-      accountNumber: "0987654321",
-      accountHolder: "GamingWarrior Corp",
+      providerName: "BANK MANDIRI",
+      accountNumber: "0987 6543 2100",
+      accountHolder: "DAFFA ARYANTA CORP",
       isPrimary: false,
     },
-  ];
+  ]);
 
   const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
+
+  // Masking Helper
+  const maskAccountNumber = (number: string) => {
+    const cleaned = number.replace(/\s/g, "");
+    if (cleaned.length <= 4) return cleaned;
+    const firstTwo = cleaned.slice(0, 2);
+    const lastTwo = cleaned.slice(-2);
+    const middle = "•".repeat(Math.max(4, cleaned.length - 4));
+    return `${firstTwo}${middle}${lastTwo}`;
+  };
+
+  // Helper for Theme Colors and Images
+  const getAccountTheme = (provider: string) => {
+    switch (true) {
+      case provider.includes("CENTRAL ASIA"):
+        return {
+          color: "220 70% 15%",
+          img: "https://images.unsplash.com/photo-1554469384-e58fac16e23a?q=80&w=1887",
+        };
+      case provider.includes("GOPAY"):
+        return {
+          color: "140 60% 10%",
+          img: "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80&w=1887",
+        };
+      case provider.includes("MANDIRI"):
+        return {
+          color: "200 60% 12%",
+          img: "https://images.unsplash.com/photo-1628348068343-c6a848d2b6dd?q=80&w=1887",
+        };
+      default:
+        return {
+          color: "250 50% 12%",
+          img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1887",
+        };
+    }
+  };
 
   const {
     register,
@@ -86,110 +136,128 @@ export default function PayoutsPage() {
   const ewalletOptions = ["Gopay", "OVO", "Dana", "ShopeePay", "LinkAja"];
 
   const handleDelete = (id: string) => {
-    console.log("Delete account", id);
-    alert(`Delete account ${id}`);
+    setAccounts((prev) => prev.filter((acc) => acc.id !== id));
   };
 
   const handleEdit = (id: string) => {
     console.log("Edit account", id);
-    alert(`Edit account ${id}`);
+    // Future: implement edit functionality
   };
 
   const handleSetPrimary = (id: string) => {
-    console.log("Set primary", id);
-    alert(`Set ${id} as primary`);
+    setAccounts((prev) =>
+      prev.map((acc) => ({
+        ...acc,
+        isPrimary: acc.id === id,
+      }))
+    );
   };
 
   const onSaveAccount = (data: PayoutAccountFormValues) => {
-    console.log("Saving account:", data);
+    const newAccount: PayoutAccount = {
+      id: Math.random().toString(36).substr(2, 9),
+      isPrimary: accounts.length === 0,
+      ...data,
+    };
+    setAccounts((prev) => [...prev, newAccount]);
     setIsAddModalOpen(false);
     reset();
-    alert("Account added successfully! (Mock)");
   };
 
   return (
-    <div className="space-y-8">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-extrabold text-slate-900">Payout Accounts</h2>
-          <p className="text-slate-500 font-medium">Manage your withdrawal destinations.</p>
+    <div className="space-y-8 pb-12">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 px-4 md:px-0">
+        <div className="flex items-center gap-4">
+          <div className="p-3 bg-yellow-400/10 rounded-2xl border border-yellow-400/20">
+            <RiBankLine className="text-yellow-400" size={32} />
+          </div>
+          <div>
+            <h2 className="text-2xl font-black text-slate-100 italic tracking-tight uppercase">
+              Payout Map
+            </h2>
+            <p className="text-slate-500 text-sm font-medium italic leading-none mt-1">
+              Geographic Visualizer of Disbursement Points
+            </p>
+          </div>
         </div>
         <Button
-          className="rounded-xl shadow-lg shadow-[var(--color-primary)]/20 bg-[var(--color-primary)] hover:bg-[var(--color-primary)]/90 text-[var(--color-deep-purple)] font-bold h-11"
+          className="rounded-xl shadow-[0_0_20px_rgba(234,179,8,0.15)] bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-black h-11 px-6 transition-all"
           onClick={() => setIsAddModalOpen(true)}
         >
-          <Plus className="mr-2 h-5 w-5" /> Add Account
+          <RiAddLine className="mr-2 h-5 w-5 stroke-3" /> PROVISION NEW POINT
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {accounts.map((account) => (
-          <Card
-            key={account.id}
-            className="p-6 border-none shadow-sm hover:shadow-md transition-all relative overflow-hidden group bg-white"
-          >
-            {account.isPrimary && (
-              <div className="absolute top-0 right-0 bg-green-100 text-green-700 text-[10px] font-bold px-3 py-1.5 rounded-bl-xl uppercase tracking-wider">
-                PRIMARY
-              </div>
-            )}
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 mx-4 md:mx-0">
+        {accounts.map((account) => {
+          const theme = getAccountTheme(account.providerName);
+          return (
+            <div key={account.id} className="group relative w-full h-[320px]">
+              <DestinationCard
+                imageUrl={theme.img}
+                location={account.providerName}
+                flag={account.type === "bank" ? "🏦" : "📱"}
+                stats={maskAccountNumber(account.accountNumber)}
+                subtitle={`Holder: ${account.accountHolder}`}
+                themeColor={theme.color}
+                className="h-full"
+                onClick={() => !account.isPrimary && handleSetPrimary(account.id)}
+              />
 
-            <div className="flex flex-col gap-4">
-              <div className="flex items-start justify-between">
-                <div
-                  className={`p-3 rounded-2xl ${account.type === "bank" ? "bg-blue-50 text-blue-600" : "bg-purple-50 text-purple-600"}`}
-                >
-                  {account.type === "bank" ? <Building2 size={24} /> : <CreditCard size={24} />}
+              {/* Primary Waypoint Indicator */}
+              {account.isPrimary && (
+                <div className="absolute top-4 left-4 z-20">
+                  <Badge className="bg-yellow-400 text-slate-950 font-black text-[9px] uppercase px-3 rounded-full shadow-lg">
+                    PRIMARY POINT
+                  </Badge>
                 </div>
+              )}
+
+              {/* Admin Actions */}
+              <div className="absolute top-4 right-4 z-20">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 text-slate-400 hover:text-slate-600 rounded-full"
+                      className="h-9 w-9 bg-black/20 backdrop-blur-md text-white border border-white/10 hover:bg-black/40 rounded-full transition-all"
                     >
-                      <MoreVertical size={16} />
+                      <RiMore2Fill size={18} />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="rounded-xl">
+                  <DropdownMenuContent
+                    align="end"
+                    className="w-48 bg-slate-900 border-slate-800 rounded-xl shadow-2xl p-1 text-slate-300"
+                  >
                     <DropdownMenuItem
                       onClick={() => handleEdit(account.id)}
-                      className="cursor-pointer"
+                      className="cursor-pointer rounded-lg focus:bg-slate-800 focus:text-white"
                     >
-                      <Pencil className="mr-2 h-4 w-4" /> Edit
+                      <RiEditLine className="mr-2 h-4 w-4" /> Edit Account
                     </DropdownMenuItem>
                     {!account.isPrimary && (
                       <>
                         <DropdownMenuItem
                           onClick={() => handleSetPrimary(account.id)}
-                          className="cursor-pointer font-medium text-[var(--color-primary)]"
+                          className="cursor-pointer rounded-lg text-yellow-500 focus:bg-yellow-500/10 focus:text-yellow-400"
                         >
-                          Set as Primary
+                          <RiStarFill className="mr-2 h-4 w-4" /> Set as Primary
                         </DropdownMenuItem>
+                        <Separator className="my-1 bg-slate-800" />
                         <DropdownMenuItem
-                          className="text-red-600 focus:text-red-600 cursor-pointer"
+                          className="cursor-pointer rounded-lg text-red-500 focus:bg-red-500/10 focus:text-red-400"
                           onClick={() => handleDelete(account.id)}
                         >
-                          <Trash2 className="mr-2 h-4 w-4" /> Delete
+                          <RiDeleteBin6Line className="mr-2 h-4 w-4" /> Delete Account
                         </DropdownMenuItem>
                       </>
                     )}
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
-
-              <div>
-                <h3 className="font-extrabold text-lg text-slate-900">{account.providerName}</h3>
-                <p className="text-slate-500 font-mono tracking-wider mt-1 text-sm">
-                  {account.accountNumber}
-                </p>
-                <p className="text-sm text-slate-400 font-bold mt-2 uppercase tracking-tight">
-                  {account.accountHolder}
-                </p>
-              </div>
             </div>
-          </Card>
-        ))}
+          );
+        })}
       </div>
 
       <Modal
@@ -198,78 +266,108 @@ export default function PayoutsPage() {
           setIsAddModalOpen(false);
           reset();
         }}
-        title="Add Payout Account"
+        title="Payment Setup"
       >
-        <form onSubmit={handleSubmit(onSaveAccount)} className="space-y-4">
+        <div className="mb-6 p-4 bg-blue-500/5 border border-blue-500/20 rounded-xl">
+          <div className="flex gap-3">
+            <RiInformationLine className="text-blue-400 shrink-0" size={20} />
+            <p className="text-[11px] text-slate-400 leading-relaxed">
+              Enter your payment details accurately. Payments will be disbursed to your primary
+              account by default. Process usually takes 1-3 business days.
+            </p>
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit(onSaveAccount)} className="space-y-5">
           <div className="space-y-2">
-            <label className="text-sm font-bold text-slate-700">Account Type</label>
+            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">
+              Method Type
+            </label>
             <select
               {...register("type")}
-              className="flex h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+              className="flex h-12 w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-yellow-400/20 focus:border-yellow-400 transition-all cursor-pointer"
             >
-              <option value="bank">Bank Account</option>
-              <option value="ewallet">E-Wallet</option>
+              <option value="bank" className="bg-slate-900">
+                BANK TRANSFER
+              </option>
+              <option value="ewallet" className="bg-slate-900">
+                E-WALLET / DIGITAL CURRENCY
+              </option>
             </select>
-            {errors.type && <p className="text-xs text-red-500">{errors.type.message}</p>}
+            {errors.type && (
+              <p className="text-[10px] font-bold text-red-500 pl-1">⚠️ {errors.type.message}</p>
+            )}
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-bold text-slate-700">Provider Name</label>
+            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">
+              Provider Selection
+            </label>
             <select
               {...register("providerName")}
-              className="flex h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+              className="flex h-12 w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-yellow-400/20 focus:border-yellow-400 transition-all cursor-pointer"
             >
-              <option value="" disabled>
-                Select Provider
+              <option value="" disabled className="bg-slate-900">
+                CHOOSE PROVIDER...
               </option>
               {accountType === "bank"
                 ? bankOptions.map((bank) => (
-                    <option key={bank} value={bank}>
+                    <option key={bank} value={bank} className="bg-slate-900 uppercase">
                       {bank}
                     </option>
                   ))
                 : ewalletOptions.map((ewallet) => (
-                    <option key={ewallet} value={ewallet}>
+                    <option key={ewallet} value={ewallet} className="bg-slate-900 uppercase">
                       {ewallet}
                     </option>
                   ))}
             </select>
             {errors.providerName && (
-              <p className="text-xs text-red-500">{errors.providerName.message}</p>
+              <p className="text-[10px] font-bold text-red-500 pl-1">
+                ⚠️ {errors.providerName.message}
+              </p>
             )}
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-bold text-slate-700">Account Number</label>
+            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">
+              Account Number / ID
+            </label>
             <input
               type="text"
-              placeholder="e.g. 1234567890"
+              placeholder="e.g. 1029384756"
               {...register("accountNumber")}
-              className="flex h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+              className="flex h-12 w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-2 text-sm text-slate-100 placeholder:text-slate-700 focus:outline-none focus:ring-2 focus:ring-yellow-400/20 focus:border-yellow-400 transition-all"
             />
             {errors.accountNumber && (
-              <p className="text-xs text-red-500">{errors.accountNumber.message}</p>
+              <p className="text-[10px] font-bold text-red-500 pl-1">
+                ⚠️ {errors.accountNumber.message}
+              </p>
             )}
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-bold text-slate-700">Account Holder Name</label>
+            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">
+              Account Holder Full Name
+            </label>
             <input
               type="text"
-              placeholder="e.g. John Doe"
+              placeholder="UPPERCASE PREFERRED"
               {...register("accountHolder")}
-              className="flex h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+              className="flex h-12 w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-2 text-sm text-slate-100 placeholder:text-slate-700 focus:outline-none focus:ring-2 focus:ring-yellow-400/20 focus:border-yellow-400 transition-all"
             />
             {errors.accountHolder && (
-              <p className="text-xs text-red-500">{errors.accountHolder.message}</p>
+              <p className="text-[10px] font-bold text-red-500 pl-1">
+                ⚠️ {errors.accountHolder.message}
+              </p>
             )}
           </div>
 
-          <div className="pt-4 flex gap-3">
+          <div className="pt-6 flex gap-3">
             <Button
               type="button"
               variant="outline"
-              className="flex-1 font-bold h-11 rounded-xl"
+              className="flex-1 font-black text-xs h-12 rounded-xl border-slate-800 text-slate-500 hover:bg-slate-800 hover:text-white transition-all uppercase"
               onClick={() => {
                 setIsAddModalOpen(false);
                 reset();
@@ -279,9 +377,9 @@ export default function PayoutsPage() {
             </Button>
             <Button
               type="submit"
-              className="flex-1 bg-[var(--color-primary)] hover:bg-[var(--color-primary)]/90 text-[var(--color-deep-purple)] font-extrabold h-11 rounded-xl shadow-lg shadow-yellow-100"
+              className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-black text-xs h-12 rounded-xl shadow-xl shadow-yellow-900/10 transition-all uppercase"
             >
-              <Save size={18} className="mr-2" /> Save Account
+              <RiSaveLine size={18} className="mr-2" /> Verify & Save
             </Button>
           </div>
         </form>

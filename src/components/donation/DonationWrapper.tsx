@@ -12,10 +12,10 @@ import { PaymentMethods } from "./PaymentMethods";
 import { CreatorSettings, SoundBoardItem } from "@/types/discovery";
 
 const donationSchema = z.object({
-  senderName: z.string().min(1, "Nama pengirim diperlukan"),
-  email: z.string().min(1, "Email diperlukan").email("Format email tidak valid"),
+  senderName: z.string().min(1, "Noble name is required"),
+  email: z.string().min(1, "Email is required").email("Thy scroll format is invalid"),
   message: z.string().optional(),
-  amount: z.number().min(1, "Jumlah minimal IDR 1"),
+  amount: z.number().min(1, "Minimum tribute is IDR 1"),
   isEmailPrivate: z.boolean(),
   activeTab: z.enum(["gift", "sound", "auction"]),
 });

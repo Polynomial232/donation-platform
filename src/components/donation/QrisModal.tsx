@@ -48,7 +48,7 @@ export function QrisModal({ isOpen, onClose, amount }: QrisModalProps) {
 
   const InvoiceView = () => (
     <div className="bg-white rounded-[32px] w-full max-w-sm relative z-10 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 border-4 border-slate-50">
-      <div className="bg-[var(--color-accent-yellow)] p-8 text-center relative overflow-hidden">
+      <div className="bg-(--color-accent-yellow) p-8 text-center relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
         <div className="mb-4 bg-white w-16 h-16 rounded-full flex items-center justify-center mx-auto shadow-lg animate-bounce">
           <CheckCircle2 size={32} className="text-green-500" strokeWidth={3} />
@@ -63,16 +63,13 @@ export function QrisModal({ isOpen, onClose, amount }: QrisModalProps) {
         {/* Ticket jagged edge effect */}
         <div className="absolute top-0 left-0 w-full h-4 -mt-2 bg-white skew-y-0 flex justify-between px-2">
           {[...Array(20)].map((_, i) => (
-            <div
-              key={i}
-              className="w-4 h-4 rounded-full bg-[var(--color-accent-yellow)] -mt-2"
-            ></div>
+            <div key={i} className="w-4 h-4 rounded-full bg-(--color-accent-yellow) -mt-2"></div>
           ))}
         </div>
 
         <div className="text-center space-y-1 pt-2">
           <p className="text-slate-400 text-xs font-bold uppercase tracking-wider">Total Dibayar</p>
-          <p className="text-3xl font-black text-[var(--color-deep-purple)]">
+          <p className="text-3xl font-black text-(--color-deep-purple)">
             IDR {amount.toLocaleString("id-ID")}
           </p>
         </div>
@@ -105,7 +102,7 @@ export function QrisModal({ isOpen, onClose, amount }: QrisModalProps) {
         </div>
 
         <div className="space-y-3 pt-2">
-          <Button className="w-full bg-[var(--color-deep-purple)] hover:bg-[var(--color-deep-purple)]/90 text-white font-bold py-3 rounded-2xl gap-2 shadow-lg shadow-purple-200">
+          <Button className="w-full bg-(--color-deep-purple) hover:bg-(--color-deep-purple)/90 text-white font-bold py-3 rounded-2xl gap-2 shadow-lg shadow-purple-200">
             <Download size={16} />
             Download Invoice
           </Button>
@@ -141,14 +138,14 @@ export function QrisModal({ isOpen, onClose, amount }: QrisModalProps) {
         /* Modal Content - Pending State */
         <div className="bg-white rounded-[32px] w-full max-w-sm relative z-10 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 border-4 border-slate-50">
           {/* Header */}
-          <div className="bg-[var(--color-pastel-purple)] p-5 text-center relative">
+          <div className="bg-(--color-pastel-purple) p-5 text-center relative">
             <button
               onClick={onClose}
-              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 p-1.5 rounded-full text-[var(--color-deep-purple)] transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 p-1.5 rounded-full text-(--color-deep-purple) transition-colors"
             >
               <X size={16} strokeWidth={3} />
             </button>
-            <h3 className="font-extrabold text-[var(--color-deep-purple)] text-lg">
+            <h3 className="font-extrabold text-(--color-deep-purple) text-lg">
               Selesaikan Pembayaran
             </h3>
           </div>
@@ -167,7 +164,7 @@ export function QrisModal({ isOpen, onClose, amount }: QrisModalProps) {
               </p>
             </div>
 
-            <div className="bg-[var(--color-pastel-yellow)] text-[var(--color-deep-purple)] px-4 py-1.5 rounded-full text-xs font-extrabold flex items-center gap-2 animate-pulse">
+            <div className="bg-(--color-pastel-yellow) text-(--color-deep-purple) px-4 py-1.5 rounded-full text-xs font-extrabold flex items-center gap-2 animate-pulse">
               <RefreshCw size={12} className="animate-spin" />
               Menunggu Pembayaran
             </div>

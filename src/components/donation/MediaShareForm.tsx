@@ -101,7 +101,7 @@ export function MediaShareForm({ settings, amount }: MediaShareFormProps) {
       <div className="flex items-center justify-between">
         <h3 className="font-extrabold text-sm text-slate-800 flex items-center gap-2">
           <PlayCircle size={18} className="text-(--color-deep-purple)" />
-          Media Share (Optional)
+          Imperial Vision (Optional)
         </h3>
         {activeType && (
           <button
@@ -168,7 +168,7 @@ export function MediaShareForm({ settings, amount }: MediaShareFormProps) {
             )}
           >
             <Mic size={16} />
-            <span className="text-xs font-bold">Voice Note</span>
+            <span className="text-xs font-bold">Royal Proclamation</span>
           </button>
         )}
         {settings.media_share_settings?.gif.is_enabled && (
@@ -191,13 +191,13 @@ export function MediaShareForm({ settings, amount }: MediaShareFormProps) {
         <div className="bg-amber-50/80 px-4 py-3 rounded-2xl border border-amber-100 flex items-start gap-3">
           <div className="text-amber-500 mt-0.5">💡</div>
           <div className="text-[11px] leading-relaxed font-medium text-amber-800/80">
-            Biaya media: <strong>Rp {pricePerSecond.toLocaleString("id-ID")}</strong> / detik.
+            Heraldry fee: <strong>IDR {pricePerSecond.toLocaleString("id-ID")}</strong> / second.
             <br />
-            Dengan donasi <strong>Rp {(amount || 0).toLocaleString("id-ID")}</strong>, kamu bisa
-            memutar hingga <strong>{budgetSeconds} detik</strong>.<br />
-            Namun kreator membatasi maksimal untuk {activeType.toUpperCase()} adalah{" "}
-            <strong>{platformMax} detik</strong>. Jadi batas akhirmu saat ini:{" "}
-            <strong>{maxDuration} detik</strong>.
+            With a tribute of <strong>IDR {(amount || 0).toLocaleString("id-ID")}</strong>, thou
+            mayest proclaim for <strong>{budgetSeconds} seconds</strong>.<br />
+            Yet the Sovereign decrees a limit of <strong>{platformMax} seconds</strong> for{" "}
+            {activeType.toUpperCase()}. Thy final constraint: <strong>{maxDuration} seconds</strong>
+            .
           </div>
         </div>
       )}
@@ -270,7 +270,7 @@ export function MediaShareForm({ settings, amount }: MediaShareFormProps) {
               )}
             ></div>
             <span className="text-xs font-bold text-slate-600">
-              {isRecording ? "Listening... 0:12" : `Press to record (max ${maxDuration}s)`}
+              {isRecording ? "Listening... 0:12" : `Invoke the voice (max ${maxDuration}s)`}
             </span>
           </div>
           <button
@@ -290,7 +290,7 @@ export function MediaShareForm({ settings, amount }: MediaShareFormProps) {
       {activeType === "gif" && (
         <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
           <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-            Cari GIF
+            Seek Visual Spells (GIF)
           </label>
           <div className="relative">
             <LinkIcon
@@ -299,7 +299,7 @@ export function MediaShareForm({ settings, amount }: MediaShareFormProps) {
             />
             <input
               type="text"
-              placeholder="Cari GIPHY..."
+              placeholder="Seek GIPHY..."
               value={gifSearchQuery}
               onChange={(e) => setGifSearchQuery(e.target.value)}
               className="w-full bg-slate-50 border-none rounded-xl py-2.5 pl-9 pr-4 text-xs font-medium text-slate-700 focus:ring-2 focus:ring-blue-100 outline-none placeholder:text-slate-300"
@@ -340,7 +340,7 @@ export function MediaShareForm({ settings, amount }: MediaShareFormProps) {
               ))
             ) : (
               <div className="col-span-3 text-center py-4 text-xs font-medium text-slate-400">
-                Tidak ada GIF yang ditemukan.
+                No visual spells found.
               </div>
             )}
           </div>
