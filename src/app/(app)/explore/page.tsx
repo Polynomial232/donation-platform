@@ -6,26 +6,257 @@ import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import toast from "react-hot-toast";
 
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 import { discoveryService } from "@/services/discovery";
 import { useDebounce } from "@/hooks/use-debounce";
+import { BGPattern } from "@/components/ui/bg-pattern";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
-import {
-  Search,
-  Flame,
-  BadgeCheck,
-  Palette,
-  Music,
-  Video,
-  Paintbrush,
-  Flag,
-  Check,
-} from "lucide-react";
+import { Search, Flame, BadgeCheck, Loader2, X, Sparkles, TrendingUp, Users } from "lucide-react";
 
+// --- Reusable Creator Card (banner + avatar style) ---
+function CreatorCard({ creator }: { creator: any }) {
+  return (
+    <div className="flex-[0_0_auto] pl-4">
+      <Link href={`/${creator.username}`} className="block group" draggable={false}>
+        <div className="bg-white rounded-2xl min-w-[260px] w-[260px] overflow-hidden flex flex-col cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-xl shadow-sm border border-slate-100/60">
+          {/* Banner */}
+          <div className="h-28 relative">
+            <Image
+              src={creator.banner}
+              alt="Banner"
+              fill
+              className="object-cover"
+              draggable={false}
+              onDragStart={(e) => e.preventDefault()}
+            />
+            <div className="absolute inset-0 bg-linear-to-t from-black/50 to-transparent" />
+            {creator.isHot && (
+              <div className="absolute bottom-2.5 left-2.5">
+                <div className="bg-(--color-accent-yellow) text-(--color-deep-purple) text-[10px] font-black px-2 py-0.5 rounded-full uppercase flex items-center gap-1">
+                  HOT <Flame size={10} fill="currentColor" />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Info */}
+          <div className="p-3.5 flex-1 flex flex-col">
+            <div className="flex items-center gap-2.5">
+              <div className="w-10 h-10 rounded-xl border-2 border-white shadow-sm overflow-hidden relative shrink-0 -mt-7">
+                <Image
+                  src={creator.avatar}
+                  alt="Avatar"
+                  fill
+                  className="object-cover"
+                  draggable={false}
+                  onDragStart={(e) => e.preventDefault()}
+                />
+              </div>
+              <div className="min-w-0 flex-1">
+                <h3 className="font-bold text-sm text-slate-900 group-hover:text-(--color-deep-purple) transition-colors flex items-center gap-1 truncate">
+                  {creator.displayName}
+                  {creator.isVerified && (
+                    <BadgeCheck
+                      size={13}
+                      className="text-(--color-accent-purple) fill-(--color-pastel-purple) shrink-0"
+                    />
+                  )}
+                </h3>
+                <p className="text-[11px] text-slate-400 truncate">{creator.role}</p>
+              </div>
+            </div>
+
+            {creator.bio && (
+              <p className="mt-2.5 text-xs text-slate-500 line-clamp-1 italic">
+                &quot;{creator.bio}&quot;
+              </p>
+            )}
+
+            <div className="mt-3 flex gap-2">
+              <Button className="px-5 bg-(--color-accent-yellow) text-(--color-deep-purple) font-bold rounded-xl text-xs hover:bg-(--color-pastel-yellow) h-8">
+                Tribute
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                className="px-3 bg-(--color-pastel-purple) text-(--color-deep-purple) font-bold rounded-xl text-xs hover:bg-purple-200 h-8"
+              >
+                Enlist
+              </Button>
+            </div>
+          </div>
+        </div>
+      </Link>
+    </div>
+  );
+}
+
+// --- Compact Grid Card (avatar-centric) ---
+function CreatorGridCard({ creator }: { creator: any }) {
+  return (
+    <Link href={`/${creator.username}`} className="block group">
+      <div className="bg-white rounded-2xl p-4 flex flex-col items-center text-center cursor-pointer hover:shadow-lg transition-all duration-300 h-full border border-slate-100/60">
+        <div className="relative mb-3">
+          <div className="w-14 h-14 rounded-full border-2 border-(--color-pastel-purple) overflow-hidden relative">
+            <Image src={creator.avatar} alt="Avatar" fill className="object-cover" />
+          </div>
+          {creator.isHot && (
+            <div className="absolute -bottom-0.5 -right-0.5 bg-(--color-accent-yellow) w-5 h-5 rounded-full border-2 border-white flex items-center justify-center">
+              <Flame size={10} className="text-(--color-deep-purple)" fill="currentColor" />
+            </div>
+          )}
+        </div>
+        <h3 className="font-bold text-xs text-slate-900 group-hover:text-(--color-deep-purple) transition-colors line-clamp-1 break-all flex items-center gap-1 justify-center">
+          {creator.displayName}
+          {creator.isVerified && (
+            <BadgeCheck
+              size={12}
+              className="text-(--color-accent-purple) fill-(--color-pastel-purple) shrink-0"
+            />
+          )}
+        </h3>
+        <p className="text-[10px] text-slate-400 mt-0.5 mb-3">{creator.role}</p>
+        <div className="w-full space-y-1.5 mt-auto">
+          <Button className="w-full bg-(--color-accent-yellow) text-(--color-deep-purple) font-bold py-1.5 rounded-lg text-[10px] h-auto hover:bg-(--color-pastel-yellow)">
+            Tribute
+          </Button>
+          <Button
+            variant="secondary"
+            className="w-full bg-(--color-pastel-purple) text-(--color-deep-purple) font-bold py-1.5 rounded-lg text-[10px] h-auto hover:bg-purple-200"
+          >
+            Enlist
+          </Button>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+// --- Search Result Row ---
+function CreatorSearchRow({ creator }: { creator: any }) {
+  return (
+    <Link href={`/${creator.username}`} className="block group">
+      <div className="bg-white p-4 flex gap-4 items-center rounded-2xl hover:shadow-md transition-all duration-200 cursor-pointer border border-slate-100/60">
+        <div className="w-14 h-14 rounded-xl overflow-hidden bg-slate-100 relative shrink-0">
+          <Image src={creator.avatar} alt="Avatar" fill className="object-cover" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <h3 className="font-bold text-sm text-slate-900 truncate group-hover:text-(--color-deep-purple) transition-colors flex items-center gap-1">
+            {creator.displayName}
+            {creator.isVerified && (
+              <BadgeCheck
+                size={13}
+                className="text-(--color-accent-purple) fill-(--color-pastel-purple) shrink-0"
+              />
+            )}
+          </h3>
+          <div className="flex items-center gap-2 mt-0.5">
+            <span className="text-[10px] font-bold text-(--color-deep-purple) bg-(--color-pastel-purple) px-2 py-0.5 rounded-full truncate">
+              {creator.category}
+            </span>
+            {creator.isHot && (
+              <span className="text-[10px] font-bold text-(--color-deep-purple) bg-(--color-accent-yellow) px-2 py-0.5 rounded-full flex items-center gap-0.5">
+                HOT <Flame size={8} fill="currentColor" />
+              </span>
+            )}
+          </div>
+          {creator.bio && (
+            <p className="text-xs text-slate-400 mt-1.5 line-clamp-1">{creator.bio}</p>
+          )}
+        </div>
+        <Button
+          size="sm"
+          className="bg-(--color-accent-yellow) text-(--color-deep-purple) font-bold rounded-xl text-xs hover:bg-(--color-pastel-yellow) h-8 px-4 shrink-0"
+        >
+          Support
+        </Button>
+      </div>
+    </Link>
+  );
+}
+
+// --- Section Header ---
+function SectionHeader({
+  icon: Icon,
+  title,
+  subtitle,
+}: {
+  icon: any;
+  title: string;
+  subtitle: string;
+}) {
+  return (
+    <div className="flex items-center gap-3 px-1">
+      <div className="w-9 h-9 rounded-xl bg-(--color-pastel-purple) flex items-center justify-center shrink-0">
+        <Icon size={18} className="text-(--color-deep-purple)" />
+      </div>
+      <div>
+        <h2 className="text-lg font-extrabold text-slate-900">{title}</h2>
+        <p className="text-[11px] text-slate-400 font-medium">{subtitle}</p>
+      </div>
+    </div>
+  );
+}
+
+// --- Skeleton Loader ---
+function CreatorGridSkeleton() {
+  return (
+    <div className="bg-white rounded-2xl p-4 flex flex-col items-center h-[200px] animate-pulse border border-slate-100/60">
+      <div className="w-14 h-14 rounded-full bg-slate-200 mb-3" />
+      <div className="h-3 w-3/4 bg-slate-200 rounded-full mb-2" />
+      <div className="h-2 w-1/2 bg-slate-200 rounded-full mb-4" />
+      <div className="w-full space-y-1.5 mt-auto">
+        <div className="h-7 w-full bg-slate-200 rounded-lg" />
+        <div className="h-7 w-full bg-slate-100 rounded-lg" />
+      </div>
+    </div>
+  );
+}
+
+// --- Infinite Scroll Footer ---
+function InfiniteScrollIndicator({
+  isFetching,
+  hasNextPage,
+  hasData,
+}: {
+  isFetching: boolean;
+  hasNextPage: boolean;
+  hasData: boolean;
+}) {
+  if (isFetching) {
+    return (
+      <div className="py-10 flex flex-col items-center justify-center gap-2">
+        <Loader2 size={24} className="animate-spin text-(--color-deep-purple)" />
+        <span className="text-xs font-medium text-slate-400">Summoning more sovereigns...</span>
+      </div>
+    );
+  }
+
+  if (hasNextPage) {
+    return (
+      <div className="py-10 flex justify-center">
+        <span className="text-xs font-medium text-slate-400">
+          Scroll to unveil more of the realm
+        </span>
+      </div>
+    );
+  }
+
+  if (hasData) {
+    return (
+      <div className="py-10 flex justify-center">
+        <span className="text-xs font-bold text-slate-400">✨ The realm is fully explored!</span>
+      </div>
+    );
+  }
+
+  return null;
+}
+
+// --- Main Content ---
 function ExploreContent() {
   const router = useRouter();
   const pathname = usePathname();
@@ -35,10 +266,20 @@ function ExploreContent() {
   const [selectedCategory, setSelectedCategory] = useState(
     searchParams.get("category") || "All Creators"
   );
-  const debouncedSearchQuery = useDebounce(searchQuery, 500);
-
+  const [isScrolled, setIsScrolled] = useState(false);
+  const debouncedSearchQuery = useDebounce(searchQuery, 400);
   const isFirstRender = useRef(true);
 
+  // --- Scroll listener for sticky header effect ---
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // --- Sync URL params with debounced search ---
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
@@ -66,6 +307,8 @@ function ExploreContent() {
       router.replace(`${pathname}?${newQuery}`, { scroll: false });
     }
   }, [debouncedSearchQuery, selectedCategory, pathname, router, searchParams]);
+
+  // --- Carousels ---
   const [emblaRef] = useEmblaCarousel({ loop: true, dragFree: true }, [
     Autoplay({ delay: 3000, stopOnInteraction: false }),
   ]);
@@ -73,8 +316,10 @@ function ExploreContent() {
     Autoplay({ delay: 4000, stopOnInteraction: false }),
   ]);
 
+  // --- Infinite scroll ---
   const { ref: inViewRef, inView } = useInView({ threshold: 0.1 });
 
+  // --- Queries ---
   const exploreQuery = useQuery({
     queryKey: ["explore-data"],
     queryFn: () => discoveryService.getExplore(),
@@ -92,7 +337,7 @@ function ExploreContent() {
       }),
     initialPageParam: 1,
     getNextPageParam: (lastPage: any) => {
-      if (lastPage?.metadata?.page < lastPage?.metadata?.lastPage) {
+      if (lastPage?.metadata?.page < lastPage?.metadata?.last_page) {
         return lastPage.metadata.page + 1;
       }
       return undefined;
@@ -118,37 +363,36 @@ function ExploreContent() {
     toast.error(errorMessage);
   }, [exploreQuery.isError, exploreQuery.error]);
 
+  // --- Loading state ---
   if (exploreQuery.isLoading || !exploreQuery.data?.data) {
     return (
-      <main className="min-h-screen bg-[var(--color-off-white)] flex items-center justify-center pb-24">
+      <main className="min-h-screen bg-(--color-off-white) flex items-center justify-center pb-24">
         <div className="animate-pulse flex flex-col items-center gap-4">
-          <div className="w-16 h-16 border-4 border-[var(--color-deep-purple)] border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-slate-500 font-medium">Bentar ya...</p>
+          <div className="w-16 h-16 border-4 border-(--color-deep-purple) border-t-transparent rounded-full animate-spin" />
+          <p className="text-slate-500 font-medium">Pray, wait a moment...</p>
         </div>
       </main>
     );
   }
 
+  // --- Data mapping ---
   const data = exploreQuery.data.data;
 
   const mapCreator = (c: any) => ({
     id: c.id || c.username,
     username: c.username,
-    displayName: c.displayName || c.username,
+    displayName: c.display_name || c.username,
     role: c.categories?.[0] || "Creator",
     category: c.categories?.[0] || "Creator",
-    banner: c.bannerUrl || "https://i.imgur.com/1Z3MVNG.jpeg",
-    avatar: c.avatarUrl || "https://i.imgur.com/1Z3MVNG.jpeg",
+    banner: c.banner_url || "https://i.imgur.com/1Z3MVNG.jpeg",
+    avatar: c.avatar_url || "https://i.imgur.com/1Z3MVNG.jpeg",
     bio: c.bio || "",
     isHot: c.is_hot,
-    isVerified: c.isVerified,
-    borderColor: "border-[var(--color-pastel-purple)]",
-    bgColor: "bg-purple-50",
-    icon: <Palette className="text-[var(--color-deep-purple)]" size={32} />,
+    isVerified: c.is_verified,
   });
 
-  const trendingCreators = data.trending?.map(mapCreator) || [];
-  const recommendedCreators = data.recommended?.map(mapCreator) || [];
+  const trendingCreators = data.trending_creators?.map(mapCreator) || [];
+  const recommendedCreators = data.recommended_creators?.map(mapCreator) || [];
   const categories = data.categories || ["All Creators"];
 
   const allPaginatedCreators =
@@ -156,430 +400,216 @@ function ExploreContent() {
 
   const isSearching = searchQuery.trim().length > 0 || selectedCategory !== "All Creators";
 
-  const filteredCreators = allPaginatedCreators;
-
   return (
-    <main className="min-h-screen bg-[var(--color-off-white)] pb-24">
-      <div className="mx-auto space-y-6">
-        {/* Search Header (Sticky) */}
-        <div className="sticky top-[69px] z-40 backdrop-blur-xl border-b border-slate-100">
-          {/* Search Input */}
-          <div className="px-6 py-2">
-            <div className="relative group w-full">
-              <Search
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[var(--color-deep-purple)] transition-colors"
-                size={20}
-              />
-              <input
-                className="w-full bg-slate-100 border-none rounded-2xl py-3 pl-12 pr-4 text-sm focus:ring-2 focus:ring-[var(--color-pastel-purple)] transition-all outline-none font-medium text-slate-700 placeholder:text-slate-400"
-                placeholder="Search creators..."
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-          </div>
+    <main className="min-h-screen bg-slate-50 relative pb-20">
+      {/* Premium Background Pattern */}
+      <BGPattern
+        variant="grid"
+        size={32}
+        fill="rgba(0,0,0,0.04)"
+        className="fixed inset-0 z-0 pointer-events-none"
+      />
 
-          {/* Category Pills */}
-          <div className="px-6 pb-4 pt-2">
-            <div className="flex gap-2 overflow-x-auto no-scrollbar py-1 -my-1">
-              {categories.map((cat: string) => (
-                <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(cat)}
-                  className={`whitespace-nowrap px-4 py-2 rounded-full text-xs font-bold transition-colors shadow-sm ${
-                    selectedCategory === cat
-                      ? "bg-[var(--color-accent-yellow)] text-[var(--color-deep-purple)]"
-                      : "bg-white text-slate-500 hover:bg-slate-50"
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
+      {/* Decorative Glowing Blobs */}
+      <div className="fixed top-[-10%] left-[-10%] w-[60%] h-[50%] rounded-full bg-(--color-pastel-purple) mix-blend-multiply blur-[120px] opacity-40 z-0 pointer-events-none"></div>
+      <div className="fixed bottom-[10%] right-[-10%] w-[50%] h-[60%] rounded-full bg-(--color-pastel-yellow) mix-blend-multiply blur-[120px] opacity-30 z-0 pointer-events-none"></div>
+
+      <div className="relative z-10">
+        <div
+          className={`
+        sticky top-[58px] sm:top-[64px] z-40 transition-all duration-300
+        ${
+          isScrolled
+            ? "bg-white/80 backdrop-blur-xl border-b border-slate-100/80 shadow-sm py-1"
+            : "bg-transparent border-b border-transparent py-2"
+        }
+      `}
+        >
+          <div className="max-w-7xl mx-auto">
+            {/* Search Input */}
+            <div className="px-4 sm:px-6 py-3">
+              <div className="relative group max-w-2xl mx-auto">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-(--color-deep-purple) transition-colors">
+                  {creatorsQuery.isFetching ? (
+                    <Loader2 size={18} className="animate-spin text-(--color-deep-purple)" />
+                  ) : (
+                    <Search size={18} />
+                  )}
+                </div>
+                <input
+                  className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-2.5 pl-11 pr-10 text-sm focus:ring-2 focus:ring-(--color-pastel-purple) focus:border-(--color-accent-purple) transition-all outline-none font-medium text-slate-700 placeholder:text-slate-400"
+                  placeholder="Search for a sovereign..."
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-slate-200 hover:bg-slate-300 flex items-center justify-center transition-colors"
+                  >
+                    <X size={12} className="text-slate-500" />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Category Pills */}
+            <div className="px-4 sm:px-6 pb-3">
+              <div className="flex gap-2 overflow-x-auto scrollbar-hide py-0.5 max-w-2xl mx-auto">
+                {categories.map((cat: string) => (
+                  <button
+                    key={cat}
+                    onClick={() => setSelectedCategory(cat)}
+                    className={`whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 ${
+                      selectedCategory === cat
+                        ? "bg-(--color-accent-yellow) text-(--color-deep-purple) shadow-sm"
+                        : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                    }`}
+                  >
+                    {cat === "All Creators" ? "The Entire Realm" : cat}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto space-y-6">
-          {/* CONTENT AREA: Toggle between Default View (Trending) and Search Results */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-8 mt-6">
           {!isSearching ? (
             <>
-              {/* Trending Section */}
-              <section className="mt-2">
-                <div className="px-6 flex justify-between items-end mb-4">
-                  <div>
-                    <h2 className="text-xl font-extrabold text-slate-900">Trending Creators</h2>
-                    <p className="text-xs text-slate-400 font-medium">Top picks this week 🔥</p>
-                  </div>
-                  <Link href="#">
-                    <span className="text-xs font-bold text-[var(--color-deep-purple)]">
-                      View all
-                    </span>
-                  </Link>
-                </div>
-
+              {/* Trending Carousel */}
+              <section>
+                <SectionHeader
+                  icon={TrendingUp}
+                  title="Trending Sovereigns"
+                  subtitle="The most favored this week 🔥"
+                />
                 <div
                   ref={emblaRef}
-                  className="overflow-hidden mx-6 pb-6 cursor-grab active:cursor-grabbing"
+                  className="overflow-hidden mt-4 cursor-grab active:cursor-grabbing"
                 >
                   <div className="flex -ml-4">
                     {trendingCreators.map((creator: any, idx: number) => (
-                      <Link
-                        href={`/${creator.username}`}
-                        key={idx}
-                        className="block group flex-[0_0_auto] pl-4"
-                        draggable={false}
-                      >
-                        <div className="bg-white shadow-[0_10px_25px_-5px_rgba(0,0,0,0.02),0_8px_10px_-6px_rgba(0,0,0,0.02)] rounded-[24px] min-w-[280px] w-[280px] overflow-hidden flex flex-col cursor-pointer transition-transform hover:scale-[1.02]">
-                          <div className="h-32 relative">
-                            <Image
-                              src={creator.banner}
-                              alt="Banner"
-                              fill
-                              className="object-cover"
-                              draggable={false}
-                              onDragStart={(e) => e.preventDefault()}
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                            {creator.isHot && (
-                              <div className="absolute bottom-3 left-3 flex items-center gap-2">
-                                <div className="bg-[var(--color-accent-yellow)] text-[var(--color-deep-purple)] text-[10px] font-black px-2 py-0.5 rounded-full uppercase flex items-center gap-1">
-                                  HOT <Flame size={10} fill="currentColor" />
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                          <div className="p-4 flex-1">
-                            <div className="flex items-start justify-between">
-                              <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 rounded-xl border-2 border-white shadow-sm overflow-hidden relative">
-                                  <Image
-                                    src={creator.avatar}
-                                    alt="Avatar"
-                                    fill
-                                    className="object-cover"
-                                    draggable={false}
-                                    onDragStart={(e) => e.preventDefault()}
-                                  />
-                                </div>
-                                <div>
-                                  <h3 className="font-bold text-sm text-slate-900 group-hover:text-[var(--color-deep-purple)] transition-colors flex items-center gap-1">
-                                    {creator.displayName}
-                                    {creator.isVerified && (
-                                      <BadgeCheck
-                                        size={14}
-                                        className="text-[var(--color-accent-purple)] fill-[var(--color-pastel-purple)]"
-                                      />
-                                    )}
-                                  </h3>
-                                  <p className="text-[11px] text-slate-500">{creator.role}</p>
-                                </div>
-                              </div>
-                            </div>
-                            <p className="mt-3 text-xs text-slate-600 line-clamp-1 italic">
-                              "{creator.bio}"
-                            </p>
-                            <div className="mt-4 flex gap-2">
-                              <Button className="flex-1 bg-[var(--color-accent-yellow)] text-[var(--color-deep-purple)] font-bold py-2.5 rounded-xl text-xs hover:bg-[var(--color-pastel-yellow)]">
-                                Support
-                              </Button>
-                              <Button
-                                variant="secondary"
-                                className="px-3 bg-[var(--color-pastel-purple)] text-[var(--color-deep-purple)] font-bold py-2.5 rounded-xl text-xs hover:bg-purple-200"
-                              >
-                                Follow
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      </Link>
+                      <CreatorCard key={idx} creator={creator} />
                     ))}
                   </div>
                 </div>
               </section>
 
-              {/* Recommended Section */}
-              <section className="mt-4 px-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h2 className="text-lg font-extrabold text-slate-900">Recommended for You</h2>
-                    <p className="text-[11px] text-slate-400 font-medium">
-                      Based on your interests
-                    </p>
+              {/* Recommended Carousel */}
+              {recommendedCreators.length > 0 && (
+                <section>
+                  <SectionHeader
+                    icon={Sparkles}
+                    title="Appointed for Thee"
+                    subtitle="Tailored to thy noble tastes"
+                  />
+                  <div
+                    ref={emblaRefRecommended}
+                    className="overflow-hidden mt-4 cursor-grab active:cursor-grabbing"
+                  >
+                    <div className="flex -ml-4">
+                      {recommendedCreators.map((creator: any, idx: number) => (
+                        <CreatorCard key={idx} creator={creator} />
+                      ))}
+                    </div>
                   </div>
-                </div>
+                </section>
+              )}
 
-                <div
-                  ref={emblaRefRecommended}
-                  className="overflow-hidden mx-6 pb-6 cursor-grab active:cursor-grabbing"
-                >
-                  <div className="flex -ml-4">
-                    {recommendedCreators.map((creator: any, idx: number) => (
-                      <Link
-                        href={`/${creator.username}`}
-                        key={idx}
-                        className="block group flex-[0_0_auto] pl-4"
-                        draggable={false}
-                      >
-                        <div className="bg-white shadow-[0_10px_25px_-5px_rgba(0,0,0,0.02),0_8px_10px_-6px_rgba(0,0,0,0.02)] rounded-[24px] min-w-[280px] w-[280px] overflow-hidden flex flex-col cursor-pointer transition-transform hover:scale-[1.02]">
-                          <div className="h-32 relative">
-                            <Image
-                              src={creator.banner}
-                              alt="Banner"
-                              fill
-                              className="object-cover"
-                              draggable={false}
-                              onDragStart={(e) => e.preventDefault()}
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                            {creator.isHot && (
-                              <div className="absolute bottom-3 left-3 flex items-center gap-2">
-                                <div className="bg-[var(--color-accent-yellow)] text-[var(--color-deep-purple)] text-[10px] font-black px-2 py-0.5 rounded-full uppercase flex items-center gap-1">
-                                  HOT <Flame size={10} fill="currentColor" />
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                          <div className="p-4 flex-1">
-                            <div className="flex items-start justify-between">
-                              <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 rounded-xl border-2 border-white shadow-sm overflow-hidden relative">
-                                  {creator.avatar ? (
-                                    <Image
-                                      src={creator.avatar}
-                                      alt="Avatar"
-                                      fill
-                                      className="object-cover"
-                                      draggable={false}
-                                      onDragStart={(e) => e.preventDefault()}
-                                    />
-                                  ) : (
-                                    <div
-                                      className={`w-full h-full flex items-center justify-center ${creator.bgColor}`}
-                                    >
-                                      {creator.icon}
-                                    </div>
-                                  )}
-                                </div>
-                                <div>
-                                  <h3 className="font-bold text-sm text-slate-900 group-hover:text-[var(--color-deep-purple)] transition-colors flex items-center gap-1">
-                                    {creator.displayName}
-                                  </h3>
-                                  <p className="text-[11px] text-slate-500">{creator.role}</p>
-                                </div>
-                              </div>
-                            </div>
-                            <p className="mt-3 text-xs text-slate-600 line-clamp-1 italic">
-                              "{creator.bio}"
-                            </p>
-                            <div className="mt-4 flex gap-2">
-                              <Button className="flex-1 bg-[var(--color-accent-yellow)] text-[var(--color-deep-purple)] font-bold py-2.5 rounded-xl text-xs hover:bg-[var(--color-pastel-yellow)]">
-                                Support
-                              </Button>
-                              <Button
-                                variant="secondary"
-                                className="px-3 bg-[var(--color-pastel-purple)] text-[var(--color-deep-purple)] font-bold py-2.5 rounded-xl text-xs hover:bg-purple-200"
-                              >
-                                Follow
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              </section>
-
-              {/* All Creators Section (Infinite Scroll) */}
-              <section className="pt-8 px-6 pb-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h2 className="text-lg font-extrabold text-slate-900">All Creators</h2>
-                    <p className="text-[11px] text-slate-400 font-medium">Discover new talent</p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              {/* All Creators Grid */}
+              <section>
+                <SectionHeader
+                  icon={Users}
+                  title="The Entire Realm"
+                  subtitle="Seek new alliances"
+                />
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mt-4">
                   {creatorsQuery.isLoading
                     ? Array.from({ length: 10 }).map((_, idx) => (
-                        <div
-                          key={`loader-${idx}`}
-                          className="bg-white shadow-sm border border-slate-100/50 rounded-[24px] p-4 flex flex-col items-center h-[200px] animate-pulse"
-                        >
-                          <div className="w-16 h-16 rounded-full bg-slate-200 mb-4"></div>
-                          <div className="h-3 w-3/4 bg-slate-200 rounded-full mb-3"></div>
-                          <div className="h-2 w-1/2 bg-slate-200 rounded-full mb-6"></div>
-                          <div className="w-full space-y-2 mt-auto">
-                            <div className="h-8 w-full bg-slate-200 rounded-lg"></div>
-                            <div className="h-8 w-full bg-slate-200 rounded-lg"></div>
-                          </div>
-                        </div>
+                        <CreatorGridSkeleton key={`skeleton-${idx}`} />
                       ))
                     : allPaginatedCreators.map((creator: any, idx: number) => (
-                        <Link
-                          href={`/${creator.username}`}
-                          key={`all-${creator.id}-${idx}`}
-                          className="block group"
-                        >
-                          <div className="bg-white shadow-[0_10px_25px_-5px_rgba(0,0,0,0.02),0_8px_10px_-6px_rgba(0,0,0,0.02)] rounded-[24px] p-4 flex flex-col items-center text-center cursor-pointer hover:shadow-md transition-all h-full">
-                            <div className="relative mb-3">
-                              {creator.avatar ? (
-                                <div className="w-16 h-16 rounded-full border-2 border-[var(--color-pastel-purple)] overflow-hidden relative">
-                                  <Image
-                                    src={creator.avatar}
-                                    alt="Avatar"
-                                    fill
-                                    className="object-cover"
-                                  />
-                                </div>
-                              ) : (
-                                <div
-                                  className={`w-16 h-16 rounded-full flex items-center justify-center border-2 ${creator.borderColor} ${creator.bgColor}`}
-                                >
-                                  {creator.icon}
-                                </div>
-                              )}
-                              {creator.isHot && (
-                                <div className="absolute -bottom-1 -right-1 bg-green-400 w-4 h-4 rounded-full border-2 border-white flex items-center justify-center">
-                                  <Flame size={10} className="text-white" fill="currentColor" />
-                                </div>
-                              )}
-                            </div>
-                            <h3 className="font-bold text-xs text-slate-900 group-hover:text-[var(--color-deep-purple)] transition-colors line-clamp-1 break-all flex items-center gap-1 justify-center">
-                              {creator.displayName}
-                            </h3>
-                            <p className="text-[10px] text-slate-400 mt-1 mb-4">{creator.role}</p>
-                            <div className="w-full space-y-2 mt-auto">
-                              <Button className="w-full bg-[var(--color-accent-yellow)] text-[var(--color-deep-purple)] font-bold py-2 rounded-lg text-[10px] h-auto hover:bg-[var(--color-pastel-yellow)]">
-                                Support
-                              </Button>
-                              <Button
-                                variant="secondary"
-                                className="w-full bg-[var(--color-pastel-purple)] text-[var(--color-deep-purple)] font-bold py-2 rounded-lg text-[10px] h-auto hover:bg-purple-200"
-                              >
-                                Follow
-                              </Button>
-                            </div>
-                          </div>
-                        </Link>
+                        <CreatorGridCard key={`all-${creator.id}-${idx}`} creator={creator} />
                       ))}
                 </div>
 
-                {/* Loader Indicator for Infinite Scroll */}
-                <div
-                  ref={inViewRef}
-                  className="py-12 flex flex-col items-center justify-center gap-3"
-                >
-                  {creatorsQuery.isFetchingNextPage || creatorsQuery.isLoading ? (
-                    <>
-                      <div className="w-8 h-8 border-4 border-slate-200 border-t-[var(--color-deep-purple)] rounded-full animate-spin"></div>
-                      <span className="text-xs font-bold text-slate-400">
-                        Loading more creators...
-                      </span>
-                    </>
-                  ) : creatorsQuery.hasNextPage ? (
-                    <span className="text-xs font-bold text-slate-400">Scroll down for more</span>
-                  ) : (
-                    <span className="text-xs font-bold text-slate-400">
-                      ✨ You've reached the end!
-                    </span>
-                  )}
+                <div ref={inViewRef}>
+                  <InfiniteScrollIndicator
+                    isFetching={creatorsQuery.isFetchingNextPage || creatorsQuery.isLoading}
+                    hasNextPage={!!creatorsQuery.hasNextPage}
+                    hasData={allPaginatedCreators.length > 0}
+                  />
                 </div>
               </section>
             </>
           ) : (
-            /* Search Results View */
-            <div className="px-4 mt-4 space-y-6">
-              {/* Results Grid - Using Design 3 List Style for Search Results */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredCreators.map((creator: any, idx: number) => (
-                  <Link href={`/${creator.username}`} key={idx} className="block group">
-                    <Card className="p-4 flex gap-4 items-center border-none shadow-[0_4px_20px_-2px_rgba(0,0,0,0.04),0_2px_8px_-1px_rgba(0,0,0,0.02)] rounded-[20px] hover:shadow-md transition-shadow cursor-pointer">
-                      <div className="relative">
-                        <div className="w-16 h-16 rounded-2xl overflow-hidden bg-slate-100 relative">
-                          {creator.avatar ? (
-                            <Image
-                              src={creator.avatar}
-                              alt="Avatar"
-                              fill
-                              className="object-cover"
-                            />
-                          ) : (
-                            creator.icon
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex justify-between items-start">
-                          <div className="pr-2 flex-1 min-w-0">
-                            <h3 className="font-extrabold text-sm text-slate-900 truncate group-hover:text-[var(--color-deep-purple)] transition-colors flex items-center gap-1">
-                              {creator.displayName}
-                            </h3>
-                            <span className="text-[10px] font-bold text-[var(--color-deep-purple)] bg-[var(--color-pastel-purple)] px-2 py-0.5 rounded-full inline-block mt-0.5 truncate max-w-full">
-                              {creator.category || creator.role}
-                            </span>
-                          </div>
-                          <div className="bg-[var(--color-pastel-yellow)] hover:bg-[var(--color-accent-yellow)] text-[var(--color-deep-purple)] px-4 py-1.5 rounded-full text-[10px] font-bold transition-colors whitespace-nowrap">
-                            Support
-                          </div>
-                        </div>
-                        <p className="text-xs text-slate-500 mt-2 line-clamp-1 italic">
-                          {creator.bio || "No bio available"}
-                        </p>
-                      </div>
-                    </Card>
-                  </Link>
-                ))}
-
-                {filteredCreators.length === 0 && !creatorsQuery.isLoading && (
-                  <div className="text-center py-10 text-slate-400 col-span-full">
-                    <p>No creators found matching your criteria.</p>
-                  </div>
-                )}
+            /* Search Results */
+            <section>
+              <div className="flex items-center justify-between mb-4 px-1">
+                <div>
+                  <h2 className="text-lg font-extrabold text-slate-900">
+                    {debouncedSearchQuery
+                      ? `Decree results for "${debouncedSearchQuery}"`
+                      : `Order: ${selectedCategory}`}
+                  </h2>
+                  <p className="text-[11px] text-slate-400 font-medium">
+                    {allPaginatedCreators.length} sovereigns found
+                  </p>
+                </div>
+                <button
+                  onClick={() => {
+                    setSearchQuery("");
+                    setSelectedCategory("The Entire Realm");
+                  }}
+                  className="text-xs font-bold text-(--color-deep-purple) bg-(--color-pastel-purple) hover:bg-purple-200 px-4 py-2 rounded-full transition-colors"
+                >
+                  Clear Decree
+                </button>
               </div>
 
-              {/* In-View triggers pagination in search view too */}
-              <div
-                ref={inViewRef}
-                className="py-12 flex flex-col items-center justify-center gap-3"
-              >
-                {creatorsQuery.isFetchingNextPage || creatorsQuery.isLoading ? (
-                  <>
-                    <div className="w-8 h-8 border-4 border-slate-200 border-t-[var(--color-deep-purple)] rounded-full animate-spin"></div>
-                    <span className="text-xs font-bold text-slate-400">
-                      Loading more results...
-                    </span>
-                  </>
-                ) : creatorsQuery.hasNextPage ? (
-                  <span className="text-xs font-bold text-slate-400">Scroll down for more</span>
-                ) : filteredCreators.length > 0 ? (
-                  <span className="text-xs font-bold text-slate-400">
-                    ✨ You've reached the end!
-                  </span>
-                ) : null}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {creatorsQuery.isLoading
+                  ? Array.from({ length: 6 }).map((_, idx) => (
+                      <div
+                        key={`search-skeleton-${idx}`}
+                        className="bg-white rounded-2xl p-4 flex gap-4 items-center animate-pulse border border-slate-100/60"
+                      >
+                        <div className="w-14 h-14 rounded-xl bg-slate-200 shrink-0" />
+                        <div className="flex-1 space-y-2">
+                          <div className="h-3 w-2/3 bg-slate-200 rounded-full" />
+                          <div className="h-2 w-1/3 bg-slate-200 rounded-full" />
+                          <div className="h-2 w-full bg-slate-100 rounded-full" />
+                        </div>
+                      </div>
+                    ))
+                  : allPaginatedCreators.map((creator: any, idx: number) => (
+                      <CreatorSearchRow key={`search-${creator.id}-${idx}`} creator={creator} />
+                    ))}
               </div>
-            </div>
+
+              {allPaginatedCreators.length === 0 && !creatorsQuery.isLoading && (
+                <div className="text-center py-16">
+                  <Search size={40} className="text-slate-300 mx-auto mb-3" />
+                  <p className="text-sm text-slate-500 font-medium">
+                    No Sovereigns match thy decree
+                  </p>
+                  <p className="text-xs text-slate-400 mt-1">Attempt another search or order</p>
+                </div>
+              )}
+
+              <div ref={inViewRef}>
+                <InfiniteScrollIndicator
+                  isFetching={creatorsQuery.isFetchingNextPage || creatorsQuery.isLoading}
+                  hasNextPage={!!creatorsQuery.hasNextPage}
+                  hasData={allPaginatedCreators.length > 0}
+                />
+              </div>
+            </section>
           )}
         </div>
       </div>
-
-      <style jsx global>{`
-        .hide-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-        .hide-scrollbar {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-        .no-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-        .no-scrollbar {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-      `}</style>
     </main>
   );
 }
@@ -588,10 +618,10 @@ export default function ExplorePage() {
   return (
     <Suspense
       fallback={
-        <main className="min-h-screen bg-[var(--color-off-white)] flex items-center justify-center pb-24">
+        <main className="min-h-screen bg-(--color-off-white) flex items-center justify-center pb-24">
           <div className="animate-pulse flex flex-col items-center gap-4">
-            <div className="w-16 h-16 border-4 border-[var(--color-deep-purple)] border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-slate-500 font-medium">Bentar ya...</p>
+            <div className="w-16 h-16 border-4 border-(--color-deep-purple) border-t-transparent rounded-full animate-spin" />
+            <p className="text-slate-500 font-medium">Pray, wait a moment...</p>
           </div>
         </main>
       }

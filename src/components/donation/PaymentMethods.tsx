@@ -17,7 +17,7 @@ interface PaymentMethodsProps {
 
 export function PaymentMethods({ amount, settings }: PaymentMethodsProps) {
   const [isQrisModalOpen, setIsQrisModalOpen] = useState(false);
-  const [selectedMethod, setSelectedMethod] = useState(settings.paymentMethods[0]?.key || "");
+  const [selectedMethod, setSelectedMethod] = useState(settings.payment_methods[0]?.key || "");
 
   const { watch } = useFormContext<DonationFormValues>();
   const senderName = watch("senderName");
@@ -30,16 +30,16 @@ export function PaymentMethods({ amount, settings }: PaymentMethodsProps) {
   return (
     <>
       <Card className="p-6 border-none shadow-sm">
-        <h3 className="font-bold text-sm text-slate-800 mb-4">Metode Pembayaran</h3>
+        <h3 className="font-bold text-sm text-slate-800 mb-4">Treasury Channel</h3>
         <div className="space-y-3">
-          {settings.paymentMethods.map((method) => (
+          {settings.payment_methods.map((method) => (
             <div
               key={method.key}
               onClick={() => setSelectedMethod(method.key)}
               className={cn(
                 "p-4 bg-slate-50 rounded-2xl flex items-center justify-between border-2 transition-all cursor-pointer",
                 selectedMethod === method.key
-                  ? "border-[var(--color-pastel-yellow)] bg-white shadow-sm"
+                  ? "border-(--color-pastel-yellow) bg-white shadow-sm"
                   : "border-transparent hover:bg-slate-100"
               )}
             >
@@ -60,7 +60,7 @@ export function PaymentMethods({ amount, settings }: PaymentMethodsProps) {
                 className={cn(
                   "w-5 h-5 rounded-full flex items-center justify-center transition-all",
                   selectedMethod === method.key
-                    ? "bg-[var(--color-accent-yellow)] border-transparent"
+                    ? "bg-(--color-accent-yellow) border-transparent"
                     : "border-2 border-slate-200"
                 )}
               >
@@ -74,11 +74,11 @@ export function PaymentMethods({ amount, settings }: PaymentMethodsProps) {
 
         <div className="mt-8 pt-6 border-t border-slate-100 space-y-3">
           <div className="flex justify-between text-xs font-medium text-slate-400">
-            <span>Dukungan Dasar</span>
-            <span>IDR {settings.minAlertAmount.toLocaleString("id-ID")}</span>
+            <span>Base Tribute</span>
+            <span>IDR {settings.min_alert_amount.toLocaleString("id-ID")}</span>
           </div>
           <div className="flex justify-between items-center mb-4">
-            <span className="text-sm font-bold text-slate-500">Total Pembayaran</span>
+            <span className="text-sm font-bold text-slate-500">Imperial Total</span>
             <span className="text-xl font-black text-slate-900">
               IDR {amount.toLocaleString("id-ID")}
             </span>
@@ -88,18 +88,18 @@ export function PaymentMethods({ amount, settings }: PaymentMethodsProps) {
         <Button
           disabled={!isFormValid}
           className={cn(
-            "w-full bg-[var(--color-deep-purple)] text-white font-bold py-4 rounded-2xl shadow-lg shadow-purple-200 transition-all",
+            "w-full bg-(--color-deep-purple) text-white font-bold py-4 rounded-2xl shadow-lg shadow-purple-200 transition-all",
             isFormValid
-              ? "hover:bg-[var(--color-deep-purple)]/90 hover:scale-[1.02] active:scale-[0.98]"
+              ? "hover:bg-deep-purple/90 hover:scale-[1.02] active:scale-[0.98]"
               : "opacity-50 cursor-not-allowed"
           )}
           onClick={() => isFormValid && selectedMethod === "QRIS" && setIsQrisModalOpen(true)}
         >
-          DUKUNG SEKARANG
+          BESTOW TRIBUTE
         </Button>
 
         <p className="text-[10px] text-center text-slate-400 mt-5 font-medium">
-          Transaksi aman via DukuNasia Secure Checkout
+          Transactions shielded by Royal Command via Secure Checkout
         </p>
       </Card>
 

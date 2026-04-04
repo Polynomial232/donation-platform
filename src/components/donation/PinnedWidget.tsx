@@ -35,15 +35,15 @@ export function PinnedWidget({ data }: { data?: any[] }) {
   if (items.length === 0) return null;
 
   return (
-    <Card className="border-none shadow-[0_4px_20px_-2px_rgba(0,0,0,0.04),0_2px_8px_-1px_rgba(0,0,0,0.02)] rounded-2xl overflow-hidden divide-y divide-slate-50">
-      <div className="bg-[var(--color-pastel-purple)] px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Pin size={16} className="text-[var(--color-deep-purple)]" fill="currentColor" />
-          <h3 className="text-xs font-black text-[var(--color-deep-purple)] uppercase tracking-widest">
-            Pinned Donations
-          </h3>
+    <Card className="border border-slate-100 shadow-sm rounded-3xl bg-white overflow-hidden">
+      <div className="bg-slate-50/80 px-5 py-4 flex items-center justify-between border-b border-slate-100">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-xl bg-(--color-pastel-purple) flex items-center justify-center shrink-0">
+            <Pin size={16} className="text-(--color-deep-purple)" fill="currentColor" />
+          </div>
+          <h3 className="text-sm font-extrabold text-slate-900 tracking-tight">Pinned Support</h3>
         </div>
-        <span className="bg-white/50 text-[var(--color-deep-purple)] text-[10px] font-bold px-2 py-0.5 rounded-full">
+        <span className="bg-white/50 text-(--color-deep-purple) text-[10px] font-bold px-2 py-0.5 rounded-full">
           {items.length}
         </span>
       </div>
@@ -51,12 +51,12 @@ export function PinnedWidget({ data }: { data?: any[] }) {
       {items.map((item, idx) => (
         <div key={idx} className="p-5 space-y-3">
           <div className="flex gap-3">
-            <div className="w-10 h-10 rounded-full bg-slate-100 overflow-hidden relative border-2 border-white shadow-sm flex-shrink-0">
+            <div className="w-10 h-10 rounded-full bg-slate-100 overflow-hidden relative border-2 border-white shadow-sm shrink-0">
               <Image src={item.avatar} alt={item.name} fill className="object-cover" />
             </div>
             <div>
               <p className="text-sm font-bold text-slate-900 leading-tight">{item.name}</p>
-              <p className="text-xs text-[var(--color-deep-purple)] font-bold bg-[var(--color-pastel-purple)] px-2 py-0.5 rounded-md inline-block mt-1">
+              <p className="text-xs text-(--color-deep-purple) font-bold bg-(--color-pastel-purple) px-2 py-0.5 rounded-md inline-block mt-1">
                 {item.amount}
               </p>
             </div>

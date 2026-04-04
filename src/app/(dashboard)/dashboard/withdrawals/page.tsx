@@ -4,42 +4,29 @@ import * as React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download, RefreshCw, AlertCircle, Printer, Wallet } from "lucide-react";
-import { PaginationControl } from "@/components/ui/pagination-control";
-import { DateRangeFilter } from "@/components/ui/date-range-filter";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  RiWallet3Line,
+  RiHistoryLine,
+  RiCheckDoubleLine,
+  RiTimeLine,
+  RiAddLine,
+  RiLineChartLine,
+} from "@remixicon/react";
 import { Modal } from "@/components/ui/modal";
-import moment from "moment";
+import WithdrawalsTable from "@/components/dashboard/WithdrawalsTable";
 
 const withdrawalSchema = z.object({
-  bankAccountId: z.string().min(1, "Pilih akun tujuan"),
-  amount: z.number().min(50000, "Minimum penarikan adalah IDR 50.000"),
+  bankAccountId: z.string().min(1, "Select destination account"),
+  amount: z.number().min(50000, "Minimum IDR 50.000 required"),
 });
 
 type WithdrawalFormValues = z.infer<typeof withdrawalSchema>;
 
-interface Withdrawal {
-  id: string;
-  amount: number;
-  bankName: string;
-  accountNumber: string;
-  status: "pending" | "success" | "failed";
-  date: Date;
-  adminFee: number;
-  serviceFee: number;
-}
-
-interface WithdrawalsData {
-  withdrawals: Withdrawal[];
-}
-
-export default function WithdrawalsPage({
-  searchParams,
-}: {
-  searchParams: { page?: string; limit?: string; from?: string; to?: string };
-}) {
+export default function WithdrawalsPage() {
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = React.useState(false);
+
   const currentBalance = 2500000;
   const adminFee = 5000;
   const serviceFeePercentage = 0.03;
@@ -59,97 +46,42 @@ export default function WithdrawalsPage({
     },
   });
 
-  const amountNum = watch("amount");
-
+  const amountNum = watch("amount") || 0;
   const serviceFee = amountNum * serviceFeePercentage;
   const totalDeductions = serviceFee + adminFee;
   const receivedAmount = amountNum > totalDeductions ? amountNum - totalDeductions : 0;
   const remainingBalance = currentBalance - amountNum;
 
-  // Mock data
-  const data: WithdrawalsData = {
-    withdrawals: [
-      {
-        id: "WD-2023001",
-        amount: 100000,
-        bankName: "BCA",
-        accountNumber: "**** 1234",
-        status: "success",
-        date: new Date(Date.now() - 1000 * 60 * 60 * 2),
-        adminFee: 5000,
-        serviceFee: 3000, // 3%
-      },
-      {
-        id: "WD-2023002",
-        amount: 500000,
-        bankName: "Mandiri",
-        accountNumber: "**** 5678",
-        status: "success",
-        date: new Date(Date.now() - 1000 * 60 * 60 * 24),
-        adminFee: 5000,
-        serviceFee: 15000, // 3%
-      },
-      {
-        id: "WD-2023003",
-        amount: 200000,
-        bankName: "Gopay",
-        accountNumber: "0812****90",
-        status: "failed",
-        date: new Date(Date.now() - 1000 * 60 * 60 * 48),
-        adminFee: 5000,
-        serviceFee: 6000, // 3%
-      },
-      {
-        id: "WD-2023004",
-        amount: 1000000,
-        bankName: "BCA",
-        accountNumber: "**** 1234",
-        status: "success",
-        date: new Date(Date.now() - 1000 * 60 * 60 * 72),
-        adminFee: 5000,
-        serviceFee: 30000, // 3%
-      },
-      {
-        id: "WD-2023006",
-        amount: 750000,
-        bankName: "BCA",
-        accountNumber: "**** 1234",
-        status: "pending",
-        date: new Date(Date.now() - 1000 * 60 * 60 * 96),
-        adminFee: 5000,
-        serviceFee: 22500, // 3%
-      },
-      {
-        id: "WD-2023007",
-        amount: 300000,
-        bankName: "OVO",
-        accountNumber: "0812****90",
-        status: "success",
-        date: new Date(Date.now() - 1000 * 60 * 60 * 120),
-        adminFee: 5000,
-        serviceFee: 9000, // 3%
-      },
-    ],
-  };
-
-  // Filter Logic
-  const from = searchParams.from;
-  const to = searchParams.to;
-
-  const filteredWithdrawals = data.withdrawals.filter((w) => {
-    const wDate = moment(w.date);
-    if (from && wDate.isBefore(moment(from), "day")) return false;
-    if (to && wDate.isAfter(moment(to), "day")) return false;
-    return true;
-  });
-
-  const page = Number(searchParams.page) || 1;
-  const limit = Number(searchParams.limit) || 5;
-  const start = (page - 1) * limit;
-  const end = start + limit;
-
-  const paginatedWithdrawals = filteredWithdrawals.slice(start, end);
-  const totalPages = Math.ceil(filteredWithdrawals.length / limit);
+  // Optimized Withdrawal Manifest Mapping
+  const withdrawalsData: any[] = [
+    {
+      id: "WD-XY892",
+      name: "Bank Central Asia",
+      accountNumber: "**** 9010",
+      amount: 1000000,
+      fees: 35000,
+      status: "success",
+      time: new Date(Date.now() - 1000 * 60 * 60 * 2),
+    },
+    {
+      id: "WD-ZQ441",
+      name: "Bank Mandiri",
+      accountNumber: "**** 2100",
+      amount: 500000,
+      fees: 20000,
+      status: "pending",
+      time: new Date(Date.now() - 1000 * 60 * 60 * 24),
+    },
+    {
+      id: "WD-AB112",
+      name: "GOPAY WALLET",
+      accountNumber: "0812****7890",
+      amount: 250000,
+      fees: 12500,
+      status: "failed",
+      time: new Date(Date.now() - 1000 * 60 * 60 * 48),
+    },
+  ];
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("id-ID", {
@@ -160,162 +92,98 @@ export default function WithdrawalsPage({
     }).format(amount);
   };
 
-  const formatDate = (date: Date) => {
-    return moment(date).format("DD MMM YYYY, HH:mm");
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "success":
-        return "bg-green-100 text-green-700 hover:bg-green-100";
-      case "pending":
-        return "bg-yellow-100 text-yellow-700 hover:bg-yellow-100";
-      case "failed":
-        return "bg-red-100 text-red-700 hover:bg-red-100";
-      default:
-        return "bg-slate-100 text-slate-700";
-    }
-  };
-
   const handleWithdraw = (data: WithdrawalFormValues) => {
-    if (data.amount > currentBalance) {
-      alert("Saldo tidak mencukupi");
-      return;
-    }
-
-    // Mock withdraw logic
+    if (data.amount > currentBalance) return;
     setIsWithdrawModalOpen(false);
     reset();
-    alert("Permintaan penarikan berhasil dikirim! (Mock)");
   };
 
   return (
-    <div className="space-y-8">
-      <div className="flex justify-between items-center">
+    <div className="space-y-8 pb-12">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 px-4 md:px-0">
         <div>
-          <h2 className="text-2xl font-extrabold text-slate-900">Riwayat Penarikan</h2>
-          <p className="text-slate-500 font-medium">Lacak semua penarikan saldo Anda di sini.</p>
+          <h2 className="text-2xl font-medium text-slate-100 italic tracking-tight uppercase">
+            WITHDRAWAL MANAGEMENT
+          </h2>
+          <p className="text-slate-500 text-sm font-medium">
+            Manage your balance withdrawals and transaction history.
+          </p>
         </div>
-        <Button
-          variant="outline"
-          className="gap-2 text-[var(--color-deep-purple)] border-[var(--color-deep-purple)] hover:bg-[var(--color-pastel-purple)]"
-        >
-          <Download size={16} /> Export CSV
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            className="rounded-xl bg-yellow-400 text-slate-950 hover:bg-yellow-500 h-10 px-4 font-bold text-xs"
+            onClick={() => setIsWithdrawModalOpen(true)}
+          >
+            <RiAddLine size={18} className="mr-2" /> NEW WITHDRAWAL
+          </Button>
+        </div>
       </div>
 
-      <Card className="p-6 bg-white border-none shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
-        <div>
-          <p className="text-slate-500 font-medium text-sm uppercase tracking-wider">
-            Saldo Saat Ini
-          </p>
-          <h1 className="text-4xl font-extrabold text-slate-900 mt-1">
-            {formatCurrency(currentBalance)}
-          </h1>
-        </div>
-        <Button
-          className="h-12 px-6 text-lg font-bold bg-[var(--color-primary)] hover:bg-[var(--color-primary)]/90 text-[var(--color-deep-purple)] rounded-xl shadow-lg shadow-[var(--color-primary)]/20"
-          onClick={() => setIsWithdrawModalOpen(true)}
-        >
-          <Wallet className="mr-2 h-5 w-5" /> Tarik Saldo
-        </Button>
-      </Card>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mx-4 md:mx-0">
+        <Card className="shadow-2xl border-slate-800 bg-slate-900/50 backdrop-blur-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
+            <CardTitle className="text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-none">
+              Available Balance
+            </CardTitle>
+            <RiWallet3Line className="h-4 w-4 text-slate-700" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-black text-slate-100 leading-none">
+              {formatCurrency(currentBalance)}
+            </div>
+            <div className="flex items-center pt-2 text-[10px] text-emerald-400 font-bold uppercase tracking-tight">
+              <RiCheckDoubleLine className="mr-1 h-3.5 w-3.5" />
+              <span>Capital Reserve Verified</span>
+            </div>
+          </CardContent>
+        </Card>
 
-      <Card className="p-6 border-none shadow-sm flex flex-col gap-4">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-2"></div>
-          <DateRangeFilter />
-        </div>
+        <Card className="shadow-2xl border-slate-800 bg-slate-900/50 backdrop-blur-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
+            <CardTitle className="text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-none">
+              Total Withdrawn
+            </CardTitle>
+            <RiLineChartLine className="h-4 w-4 text-slate-700" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-black text-slate-100 leading-none">
+              {formatCurrency(1750000)}
+            </div>
+            <div className="flex items-center pt-2 text-[10px] text-blue-400 font-bold uppercase tracking-tight">
+              <RiHistoryLine className="mr-1 h-3.5 w-3.5" />
+              <span>Verified Disbursed</span>
+            </div>
+          </CardContent>
+        </Card>
 
-        <div className="border border-slate-100 rounded-xl overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-slate-50 text-slate-500 font-bold uppercase text-[11px]">
-                <tr>
-                  <th className="px-6 py-4">ID Penarikan</th>
-                  <th className="px-6 py-4">Tanggal & Waktu</th>
-                  <th className="px-6 py-4">Metode</th>
-                  <th className="px-6 py-4">Jumlah</th>
-                  <th className="px-6 py-4">Biaya Layanan</th>
-                  <th className="px-6 py-4">Biaya Admin</th>
-                  <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4 text-center">Aksi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {paginatedWithdrawals.length > 0 ? (
-                  paginatedWithdrawals.map((item) => (
-                    <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
-                      <td className="px-6 py-4 font-bold text-slate-900">{item.id}</td>
-                      <td className="px-6 py-4 text-slate-600">{formatDate(item.date)}</td>
-                      <td className="px-6 py-4">
-                        <div className="flex flex-col">
-                          <span className="font-bold text-slate-800">{item.bankName}</span>
-                          <span className="text-xs text-slate-500">{item.accountNumber}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 font-bold text-slate-900">
-                        {formatCurrency(item.amount)}
-                      </td>
-                      <td className="px-6 py-4 text-slate-500">
-                        {formatCurrency(item.serviceFee)}{" "}
-                        <span className="text-xs text-slate-400">
-                          ({((item.serviceFee / item.amount) * 100).toFixed(0)}%)
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-slate-500">{formatCurrency(item.adminFee)}</td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold capitalize ${getStatusColor(item.status)}`}
-                        >
-                          {item.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-center flex items-center justify-center gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-slate-400 hover:text-[var(--color-deep-purple)] hover:bg-[var(--color-pastel-purple)] gap-1 h-8 px-2"
-                          onClick={() => window.print()}
-                        >
-                          <Printer size={14} />
-                          <span className="text-xs">Invoice</span>
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-slate-400 hover:text-red-500 hover:bg-red-50 gap-1 h-8 px-2"
-                        >
-                          <AlertCircle size={14} />
-                          <span className="text-xs">Lapor</span>
-                        </Button>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={7} className="px-6 py-12 text-center">
-                      <div className="flex flex-col items-center gap-2 text-slate-400">
-                        <RefreshCw className="h-8 w-8 opacity-20" />
-                        <p>Tidak ada riwayat penarikan ditemukan.</p>
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <Card className="shadow-2xl border-slate-800 bg-slate-900/50 backdrop-blur-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
+            <CardTitle className="text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-none">
+              Processing Rate
+            </CardTitle>
+            <RiTimeLine className="h-4 w-4 text-slate-700" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-black text-slate-100 leading-none">2.4h</div>
+            <div className="flex items-center pt-2 text-[10px] text-yellow-400 font-bold uppercase tracking-tight">
+              <span>Average Fulfillment</span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
-        <div className="border-t border-slate-100 pt-4">
-          <PaginationControl
-            currentPage={page}
-            totalPages={totalPages}
-            limit={limit}
-            totalEntries={filteredWithdrawals.length}
-          />
+      {/* Specialized Withdrawal Records */}
+      <div className="mx-4 md:mx-0">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="size-2 rounded-full bg-yellow-400 shadow-[0_0_10px_rgba(234,179,8,0.5)] animate-pulse" />
+          <h3 className="text-lg font-bold text-slate-100 uppercase tracking-tight italic">
+            Synchronization Manifests
+          </h3>
         </div>
-      </Card>
+        <WithdrawalsTable withdrawals={withdrawalsData} />
+      </div>
 
       <Modal
         isOpen={isWithdrawModalOpen}
@@ -323,99 +191,97 @@ export default function WithdrawalsPage({
           setIsWithdrawModalOpen(false);
           reset();
         }}
-        title="Tarik Saldo"
+        title="Fulfillment Protocol"
       >
-        <form onSubmit={handleSubmit(handleWithdraw)} className="space-y-4">
-          <div className="bg-slate-50 p-4 rounded-xl mb-4">
-            <p className="text-sm text-slate-500 mb-1">Saldo Tersedia</p>
-            <p className="text-2xl font-bold text-slate-900">{formatCurrency(currentBalance)}</p>
-          </div>
-
-          <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg text-xs text-yellow-800 mb-4 font-medium">
-            Minimum Penarikan adalah IDR 50.000, maksimum jumlah per sekali penarikan adalah IDR
-            50.000.000
+        <form onSubmit={handleSubmit(handleWithdraw)} className="space-y-6 pt-2">
+          <div className="p-5 bg-slate-950 border border-slate-800 rounded-2xl space-y-1 ring-1 ring-inset ring-white/5 shadow-inner">
+            <span className="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em]">
+              RESERVE BALANCE
+            </span>
+            <div className="text-3xl font-black text-slate-100 italic tracking-tighter tabular-nums">
+              {formatCurrency(currentBalance)}
+            </div>
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-bold text-slate-700">Pilih Akun Tujuan</label>
+            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
+              Capital Destination
+            </label>
             <select
               {...register("bankAccountId")}
-              className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-deep-purple)] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex h-14 w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-2 text-sm text-slate-100 font-bold focus:outline-none focus:ring-2 focus:ring-yellow-400/20 focus:border-yellow-400 transition-all uppercase"
             >
-              <option value="bca">BCA - **** 1234 (GamingWarrior Official)</option>
-              <option value="gopay">Gopay - 0812****90 (GamingWarrior)</option>
+              <option value="bca">BCA • •••• 9010 (Verified)</option>
+              <option value="gopay">GOPAY • 0812****7890 (Primary)</option>
             </select>
-            {errors.bankAccountId && (
-              <p className="text-xs text-red-500 mt-1">{errors.bankAccountId.message}</p>
-            )}
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-bold text-slate-700">Jumlah Penarikan (IDR)</label>
-            <div className="relative">
-              <span className="absolute left-3 top-2.5 text-sm font-bold text-slate-400">IDR</span>
+            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
+              Transfer magnitude (IDR)
+            </label>
+            <div className="relative group">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-black text-slate-600 transition-colors group-focus-within:text-yellow-400">
+                IDR
+              </span>
               <input
                 type="text"
-                placeholder="Min. 50.000"
-                className={
-                  z.string().min(1).safeParse(errors.amount?.message).success
-                    ? "flex h-10 w-full rounded-md border border-red-500 bg-white pl-12 pr-3 py-2 text-sm outline-none"
-                    : "flex h-10 w-full rounded-md border border-slate-200 bg-white pl-12 pr-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-deep-purple)] focus-visible:ring-offset-2"
-                }
+                placeholder="0"
+                className="flex h-14 w-full rounded-2xl border border-slate-800 bg-slate-950 pl-12 pr-4 py-2 text-xl font-black text-slate-100 placeholder:text-slate-800 focus:outline-none focus:border-yellow-400/50 focus:ring-2 focus:ring-yellow-400/10 transition-all tabular-nums selection:bg-yellow-400/30"
                 value={amountNum === 0 ? "" : amountNum.toLocaleString("id-ID")}
                 onChange={(e) => {
                   const value = e.target.value.replace(/[^0-9]/g, "");
-                  const numberValue = Number(value);
-                  setValue("amount", isNaN(numberValue) ? 0 : numberValue, {
-                    shouldValidate: true,
-                  });
+                  setValue("amount", Number(value) || 0, { shouldValidate: true });
                 }}
               />
             </div>
-            {errors.amount && <p className="text-xs text-red-500 mt-1">{errors.amount.message}</p>}
-
-            {amountNum > 0 && (
-              <div className="space-y-2 mt-2 p-3 bg-slate-50 rounded-lg text-sm border border-slate-100">
-                <div className="flex justify-between text-slate-500 font-medium">
-                  <span>Biaya Layanan (3%)</span>
-                  <span>- {formatCurrency(serviceFee)}</span>
-                </div>
-                <div className="flex justify-between text-slate-500 font-medium">
-                  <span>Biaya Admin</span>
-                  <span>- {formatCurrency(adminFee)}</span>
-                </div>
-                <div className="flex justify-between font-extrabold text-slate-900 pt-2 border-t border-slate-200">
-                  <span>Akan Diterima</span>
-                  <span>{formatCurrency(receivedAmount)}</span>
-                </div>
-                <div className="flex justify-between text-[11px] text-slate-400 mt-1 font-bold">
-                  <span>Sisa Saldo</span>
-                  <span className={remainingBalance < 0 ? "text-red-500" : ""}>
-                    {formatCurrency(remainingBalance)}
-                  </span>
-                </div>
-              </div>
+            {errors.amount && (
+              <p className="text-[10px] font-black text-red-500 italic mt-1 ml-1 leading-none tracking-tight">
+                ERROR: {errors.amount.message}
+              </p>
             )}
           </div>
+
+          {amountNum > 0 && (
+            <div className="bg-slate-950/80 backdrop-blur-xl border border-slate-800 p-5 rounded-3xl space-y-3 ring-1 ring-inset ring-white/5 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+              <div className="flex justify-between text-[11px] font-black text-slate-500 uppercase tracking-widest leading-none">
+                <span>Protocol Fee Estimate</span>
+                <span className="text-slate-400">-{formatCurrency(serviceFee)}</span>
+              </div>
+              <div className="flex justify-between text-[11px] font-black text-slate-500 uppercase tracking-widest leading-none">
+                <span>Administrative Overhead</span>
+                <span className="text-slate-400">-{formatCurrency(adminFee)}</span>
+              </div>
+              <div className="h-px bg-slate-800/80 my-2 shadow-[0_0_10px_rgba(255,255,255,0.05)]" />
+              <div className="flex justify-between items-center">
+                <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] italic">
+                  Net Capital Settlement
+                </span>
+                <span className="text-2xl font-black text-yellow-400 italic tracking-tighter drop-shadow-[0_0_15px_rgba(234,179,8,0.4)]">
+                  {formatCurrency(receivedAmount)}
+                </span>
+              </div>
+            </div>
+          )}
 
           <div className="pt-4 flex gap-3">
             <Button
               type="button"
               variant="outline"
-              className="flex-1 font-bold h-11"
+              className="flex-1 font-black h-14 rounded-2xl border-slate-800 text-slate-600 hover:bg-slate-800 hover:text-white transition-all uppercase text-[10px] tracking-[0.2em] shadow-lg"
               onClick={() => {
                 setIsWithdrawModalOpen(false);
                 reset();
               }}
             >
-              Batal
+              Cancel
             </Button>
             <Button
               type="submit"
-              className="flex-1 bg-[var(--color-primary)] hover:bg-[var(--color-primary)]/90 text-[var(--color-deep-purple)] font-extrabold h-11 shadow-lg shadow-[var(--color-primary)]/10"
+              className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-black h-14 rounded-2xl transition-all uppercase text-[10px] tracking-[0.2em] shadow-xl shadow-yellow-900/20 active:scale-[0.98]"
               disabled={amountNum < 50000 || remainingBalance < 0}
             >
-              Konfirmasi
+              Confirm Transfer
             </Button>
           </div>
         </form>

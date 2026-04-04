@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { notFound, useParams } from "next/navigation";
+import { BGPattern } from "@/components/ui/bg-pattern";
 
 import { ProfileHeader } from "@/components/donation/ProfileHeader";
 import { PowerUpEffects } from "@/components/donation/PowerUpEffects";
@@ -19,7 +20,7 @@ import { discoveryService } from "@/services/discovery";
 import { CreatorDetailResponse, CreatorSection } from "@/types/discovery";
 
 function isSectionVisible(section: CreatorSection): boolean {
-  if (!section.isEnabled) return false;
+  if (!section.is_enabled) return false;
 
   const { data } = section;
   if (!data) return false;
@@ -44,9 +45,17 @@ function SectionRenderer({ section }: { section: CreatorSection }) {
       return <LeaderboardWidget data={section.data} />;
     case "CUSTOM_CONTENT":
       return (
-        <Card className="p-5 border-none shadow-[0_4px_20px_-2px_rgba(0,0,0,0.04),0_2px_8px_-1px_rgba(0,0,0,0.02)] rounded-2xl bg-white">
-          <h3 className="font-extrabold text-sm text-slate-900 mb-3">{section.title}</h3>
-          <p className="text-sm text-slate-600 font-medium">{section.data?.content}</p>
+        <Card className="border border-slate-100 shadow-sm rounded-3xl bg-white overflow-hidden">
+          <div className="bg-slate-50/80 px-5 py-4 flex items-center gap-3 border-b border-slate-100">
+            <h3 className="text-sm font-extrabold text-slate-900 tracking-tight">
+              {section.title}
+            </h3>
+          </div>
+          <div className="p-5">
+            <p className="text-sm text-slate-600 font-medium leading-relaxed">
+              {section.data?.content}
+            </p>
+          </div>
         </Card>
       );
     default:
@@ -102,10 +111,10 @@ export default function CreatorPage() {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen bg-[var(--color-off-white)] flex items-center justify-center">
+      <main className="min-h-screen bg-(--color-off-white) flex items-center justify-center">
         <div className="animate-pulse flex flex-col items-center gap-4">
-          <div className="w-16 h-16 border-4 border-[var(--color-deep-purple)] border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-slate-500 font-medium">Loading profile...</p>
+          <div className="w-16 h-16 border-4 border-(--color-deep-purple) border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-slate-500 font-medium">Summoning the sovereign&apos;s record...</p>
         </div>
       </main>
     );
@@ -115,24 +124,38 @@ export default function CreatorPage() {
     return notFound();
   }
 
-  const { profile, settings, soundBoard } = data;
+  const { profile, settings, sound_board: soundBoard } = data;
 
   return (
-    <main className="min-h-screen bg-[var(--color-off-white)] pb-12">
-      <div className={`mx-auto px-4 pt-6 ${hasVisibleRightSections ? "max-w-6xl" : "max-w-3xl"}`}>
+    <main className="min-h-screen bg-slate-50 relative pb-16">
+      {/* Premium Background Pattern */}
+      <BGPattern
+        variant="grid"
+        size={32}
+        fill="rgba(0,0,0,0.04)"
+        className="fixed inset-0 z-0 pointer-events-none"
+      />
+
+      {/* Decorative Glowing Blobs */}
+      <div className="fixed top-[-10%] left-[-10%] w-[60%] h-[50%] rounded-full bg-(--color-pastel-purple) mix-blend-multiply blur-[120px] opacity-40 z-0 pointer-events-none"></div>
+      <div className="fixed bottom-[10%] right-[-10%] w-[50%] h-[60%] rounded-full bg-(--color-pastel-yellow) mix-blend-multiply blur-[120px] opacity-30 z-0 pointer-events-none"></div>
+
+      <div
+        className={`relative z-10 mx-auto px-4 pt-8 ${hasVisibleRightSections ? "max-w-6xl" : "max-w-3xl"}`}
+      >
         <div
-          className={`grid grid-cols-1 gap-8 ${hasVisibleRightSections ? "lg:grid-cols-12" : ""}`}
+          className={`grid grid-cols-1 gap-10 ${hasVisibleRightSections ? "lg:grid-cols-12" : ""}`}
         >
           {/* Main Content Column */}
-          <div className={`space-y-6 ${hasVisibleRightSections ? "lg:col-span-8" : ""}`}>
+          <div className={`space-y-8 ${hasVisibleRightSections ? "lg:col-span-8" : ""}`}>
             <ProfileHeader
               username={profile.username}
-              displayName={profile.displayName}
+              displayName={profile.display_name}
               bio={profile.bio}
-              avatarUrl={profile.avatarUrl}
-              bannerUrl={profile.bannerUrl}
-              isLive={profile.isLive}
-              isVerified={profile.isVerified}
+              avatarUrl={profile.avatar_url}
+              bannerUrl={profile.banner_url}
+              isLive={profile.is_live}
+              isVerified={profile.is_verified}
             />
 
             {/* Dynamic Left Sections */}
@@ -150,7 +173,7 @@ export default function CreatorPage() {
 
           {/* Right Sidebar — only rendered when visible sections exist */}
           {hasVisibleRightSections && (
-            <div className="lg:col-span-4 space-y-6">
+            <div className="lg:col-span-4 space-y-8">
               {rightSections.map((section) => (
                 <SectionRenderer key={section.id} section={section} />
               ))}

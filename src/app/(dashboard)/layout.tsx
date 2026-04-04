@@ -1,115 +1,174 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import React from "react";
+import { usePathname, useRouter } from "next/navigation";
 import {
-  LayoutDashboard,
-  ListMusic,
-  Settings,
-  LogOut,
-  History,
+  Dashboard,
   Wallet,
-  CreditCard,
   Layers,
-} from "lucide-react";
+  Settings as SettingsIcon,
+  Archive,
+  Time,
+  Result,
+  Analytics,
+  User as UserIcon,
+  Logout,
+  ChevronDown as ChevronDownIcon,
+  Activity,
+  UserMultiple,
+  CloudUpload,
+  Notification,
+} from "@carbon/icons-react";
 import { cn } from "@/lib/utils";
+import { IconNavigation, DetailSidebar } from "@/components/ui/sidebar-component";
 
-const sidebarSections = [
-  {
-    title: "Main",
-    items: [
-      { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
-      { icon: Wallet, label: "Riwayat Penarikan", href: "/dashboard/withdrawals" },
-      { icon: CreditCard, label: "Payout Account", href: "/dashboard/payouts" },
-      { icon: History, label: "Riwayat Dukungan", href: "/dashboard/history" },
-    ],
-  },
-  {
-    title: "Streaming Tools",
-    items: [
-      { icon: Layers, label: "Overlay Settings", href: "/dashboard/overlay" },
-      // Add more later like Alert Box settings, etc. if needed detailed
-    ],
-  },
-  {
-    title: "Account",
-    items: [{ icon: Settings, label: "Settings", href: "/dashboard/settings" }],
-  },
+interface NavItem {
+  id: string;
+  icon: React.ReactNode;
+  label: string;
+}
+
+const navItems: NavItem[] = [
+  { id: "dashboard", icon: <Dashboard size={18} />, label: "Dashboard" },
+  { id: "wallet", icon: <Wallet size={18} />, label: "Financials" },
+  { id: "tools", icon: <Layers size={18} />, label: "Streaming" },
+  { id: "settings", icon: <SettingsIcon size={18} />, label: "Account" },
 ];
 
-// Flatten for mobile
-const allSidebarItems = sidebarSections.flatMap((s) => s.items);
+function getSidebarContent(activeSection: string, pathname: string): any {
+  const contentMap: Record<string, any> = {
+    dashboard: {
+      title: "Dashboard",
+      sections: [
+        {
+          title: "General",
+          items: [
+            {
+              icon: <Analytics size={16} />,
+              label: "Account Overview",
+              href: "/dashboard",
+              isActive: pathname === "/dashboard",
+            },
+            {
+              icon: <Activity size={16} />,
+              label: "Transaction History",
+              href: "/dashboard/history",
+              isActive: pathname === "/dashboard/history",
+            },
+          ],
+        },
+      ],
+    },
+    wallet: {
+      title: "Financials",
+      sections: [
+        {
+          title: "Management",
+          items: [
+            {
+              icon: <Result size={16} />,
+              label: "Payout Management",
+              href: "/dashboard/withdrawals",
+              isActive: pathname === "/dashboard/withdrawals",
+            },
+            {
+              icon: <Wallet size={16} />,
+              label: "Payment Accounts",
+              href: "/dashboard/payouts",
+              isActive: pathname === "/dashboard/payouts",
+            },
+          ],
+        },
+      ],
+    },
+    tools: {
+      title: "Streaming Tools",
+      sections: [
+        {
+          title: "Customization",
+          items: [
+            {
+              icon: <Layers size={16} />,
+              label: "Overlay Settings",
+              href: "/dashboard/overlay",
+              isActive: pathname === "/dashboard/overlay",
+            },
+          ],
+        },
+      ],
+    },
+    settings: {
+      title: "Account",
+      sections: [
+        {
+          title: "System",
+          items: [
+            {
+              icon: <SettingsIcon size={16} />,
+              label: "Profile Settings",
+              href: "/dashboard/settings",
+              isActive: pathname === "/dashboard/settings",
+            },
+          ],
+        },
+      ],
+    },
+  };
+  return contentMap[activeSection] || contentMap.dashboard;
+}
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const [activeSection, setActiveSection] = React.useState(() => {
+    if (pathname.includes("withdrawals") || pathname.includes("payouts")) return "wallet";
+    if (pathname.includes("overlay")) return "tools";
+    if (pathname.includes("settings")) return "settings";
+    return "dashboard";
+  });
+  const [isCollapsed, setIsCollapsed] = React.useState(false);
+  const router = useRouter();
+
+  const handleLinkClick = (href: string) => {
+    router.push(href);
+  };
+
+  const currentContent = getSidebarContent(activeSection, pathname);
 
   return (
-    <div className="min-h-screen bg-[var(--color-off-white)] flex">
+    <div className="min-h-screen bg-slate-950 flex overflow-hidden">
       {/* Sidebar - Desktop */}
-      <aside className="w-64 bg-white border-r border-slate-100 hidden md:flex flex-col fixed h-full z-20 overflow-y-auto">
-        <div className="p-6 flex items-center gap-2 border-b border-slate-50 sticky top-0 bg-white z-10">
-          <div className="w-8 h-8 bg-[var(--color-accent-yellow)] rounded-lg flex items-center justify-center text-[var(--color-deep-purple)] font-black text-lg shadow-sm">
-            D
-          </div>
-          <span className="font-bold text-lg tracking-tight text-slate-900">DukuNasia</span>
-        </div>
-
-        <div className="flex-1 py-6 px-4 space-y-6">
-          {sidebarSections.map((section, idx) => (
-            <div key={idx}>
-              {section.title && (
-                <h3 className="px-4 mb-2 text-xs font-bold text-slate-400 uppercase tracking-wider">
-                  {section.title}
-                </h3>
-              )}
-              <div className="space-y-1">
-                {section.items.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={cn(
-                      "flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all",
-                      pathname === item.href
-                        ? "bg-[var(--color-pastel-purple)] text-[var(--color-deep-purple)]"
-                        : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
-                    )}
-                  >
-                    <item.icon size={20} />
-                    {item.label}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="p-4 border-t border-slate-50 sticky bottom-0 bg-white">
-          <button className="flex w-full items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm text-red-500 hover:bg-red-50 transition-all">
-            <LogOut size={20} />
-            Logout
-          </button>
-        </div>
-      </aside>
-
-      {/* Mobile Bottom Nav (Simple implementation for now) */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 flex justify-around p-3 z-50 overflow-x-auto">
-        {allSidebarItems.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={cn(
-              "flex flex-col items-center gap-1 p-2 rounded-xl min-w-[60px]",
-              pathname === item.href ? "text-[var(--color-deep-purple)]" : "text-slate-400"
-            )}
-          >
-            <item.icon size={20} />
-            <span className="text-[10px] font-bold whitespace-nowrap">{item.label}</span>
-          </Link>
-        ))}
-      </nav>
+      <div className="hidden md:flex h-screen sticky top-0 shadow-xl z-20">
+        <IconNavigation
+          activeSection={activeSection}
+          onSectionChange={setActiveSection}
+          navItems={navItems}
+          bottomItems={
+            <button
+              onClick={() => router.push("/")}
+              className="flex items-center justify-center rounded-xl size-10 min-w-10 transition-all hover:bg-slate-700/50 text-slate-400 hover:text-white"
+            >
+              <Logout size={18} />
+            </button>
+          }
+        />
+        <DetailSidebar
+          activeSection={activeSection}
+          content={currentContent}
+          isCollapsed={isCollapsed}
+          setIsCollapsed={setIsCollapsed}
+          onLinkClick={handleLinkClick}
+        />
+      </div>
 
       {/* Main Content */}
-      <main className="flex-1 md:ml-64 p-4 md:p-8 pb-24 md:pb-8">{children}</main>
+      <main
+        className={cn(
+          "flex-1 p-4 md:p-8 overflow-y-auto h-screen transition-all duration-300",
+          isCollapsed ? "md:max-w-[calc(100vw-8rem)]" : "md:max-w-[calc(100vw-22.5rem)]"
+        )}
+      >
+        <div className="max-w-6xl mx-auto">{children}</div>
+      </main>
     </div>
   );
 }

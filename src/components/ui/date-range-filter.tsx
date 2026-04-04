@@ -2,85 +2,60 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { DateRange } from "react-day-picker";
+import { parseISO, format } from "date-fns";
+import CalendarWithPresets from "@/components/dashboard/CalendarWithPresets";
 
 export function DateRangeFilter() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [startDate, setStartDate] = useState(searchParams.get("from") || "");
-  const [endDate, setEndDate] = useState(searchParams.get("to") || "");
+  const getInitialDate = (): DateRange | undefined => {
+    const from = searchParams.get("from");
+    const to = searchParams.get("to");
+    if (from && to) {
+      try {
+        return { from: parseISO(from), to: parseISO(to) };
+      } catch {
+        // fallback
+      }
+    }
+
+    // Default to "Last Month" as requested
+    const today = new Date();
+    const lastMonth = {
+      from: new Date(today.getFullYear(), today.getMonth() - 1, 1),
+      to: new Date(today.getFullYear(), today.getMonth(), 0),
+    };
+    return lastMonth;
+  };
+
+  const [date, setDate] = useState<DateRange | undefined>(getInitialDate());
 
   useEffect(() => {
-    setStartDate(searchParams.get("from") || "");
-    setEndDate(searchParams.get("to") || "");
+    // Sync URL params to state if they change externally (e.g. back button)
+    setDate(getInitialDate());
   }, [searchParams]);
 
-  const updateFilters = (start: string, end: string) => {
+  const handleSetDate = (newDate: DateRange | undefined) => {
+    setDate(newDate);
     const params = new URLSearchParams(searchParams.toString());
-    if (start) params.set("from", start);
-    else params.delete("from");
 
-    if (end) params.set("to", end);
-    else params.delete("to");
+    if (newDate?.from) {
+      params.set("from", format(newDate.from, "yyyy-MM-dd"));
+    } else {
+      params.delete("from");
+    }
+
+    if (newDate?.to) {
+      params.set("to", format(newDate.to, "yyyy-MM-dd"));
+    } else {
+      params.delete("to");
+    }
 
     params.set("page", "1"); // Reset to page 1
-    router.push(`?${params.toString()}`);
+    router.push(`?${params.toString()}`, { scroll: false });
   };
 
-  const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newStart = e.target.value;
-    setStartDate(newStart);
-    updateFilters(newStart, endDate);
-  };
-
-  const handleEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newEnd = e.target.value;
-    setEndDate(newEnd);
-    updateFilters(startDate, newEnd);
-  };
-
-  const clearFilters = () => {
-    setStartDate("");
-    setEndDate("");
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete("from");
-    params.delete("to");
-    params.set("page", "1");
-    router.push(`?${params.toString()}`);
-  };
-
-  const hasFilters = startDate || endDate;
-
-  return (
-    <div className="flex items-center gap-2 bg-white p-2 rounded-lg border border-slate-200">
-      <div className="flex items-center gap-2">
-        <span className="text-xs font-bold text-slate-500 uppercase">Filter Date:</span>
-        <input
-          type="date"
-          value={startDate}
-          onChange={handleStartDateChange}
-          className="h-8 text-xs border border-slate-200 rounded px-2 text-slate-600 focus:outline-none focus:border-blue-500"
-        />
-        <span className="text-slate-400">-</span>
-        <input
-          type="date"
-          value={endDate}
-          onChange={handleEndDateChange}
-          className="h-8 text-xs border border-slate-200 rounded px-2 text-slate-600 focus:outline-none focus:border-blue-500"
-        />
-      </div>
-      {hasFilters && (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={clearFilters}
-          className="h-8 w-8 p-0 text-slate-400 hover:text-red-500"
-        >
-          <X className="w-4 h-4" />
-        </Button>
-      )}
-    </div>
-  );
+  return <CalendarWithPresets date={date} setDate={handleSetDate} />;
 }

@@ -64,8 +64,8 @@ export function SoundList({ data, selectedAmount, onSelectAmount }: SoundListPro
   return (
     <Card className="p-4 border-none shadow-[0_4px_20px_-2px_rgba(0,0,0,0.04),0_2px_8px_-1px_rgba(0,0,0,0.02)] rounded-2xl space-y-3">
       <h3 className="font-extrabold text-sm text-slate-800 flex items-center gap-2 mb-2">
-        <Music size={18} className="text-[var(--color-deep-purple)]" />
-        Pilih Sound Effect
+        <Music size={18} className="text-(--color-deep-purple)" />
+        Choose Royal Fanfare
       </h3>
 
       <div className="grid grid-cols-1 gap-2">
@@ -79,7 +79,7 @@ export function SoundList({ data, selectedAmount, onSelectAmount }: SoundListPro
               className={cn(
                 "flex items-center justify-between p-3 rounded-xl border transition-all cursor-pointer group hover:shadow-md",
                 isSelected
-                  ? "bg-[var(--color-pastel-purple)] border-[var(--color-deep-purple)]/20"
+                  ? "bg-(--color-pastel-purple) border-deep-purple/20"
                   : "bg-white border-slate-100 hover:border-slate-200"
               )}
               onClick={() => handleSelect(sound.id)}
@@ -88,13 +88,13 @@ export function SoundList({ data, selectedAmount, onSelectAmount }: SoundListPro
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    togglePlay(sound.id, sound.audioUrl);
+                    togglePlay(sound.id, sound.audio_url);
                   }}
                   className={cn(
                     "w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-sm shrink-0",
                     isPlaying
-                      ? "bg-[var(--color-deep-purple)] text-white"
-                      : "bg-white border border-slate-100 text-slate-500 group-hover:border-[var(--color-deep-purple)] group-hover:text-[var(--color-deep-purple)]"
+                      ? "bg-(--color-deep-purple) text-white"
+                      : "bg-white border border-slate-100 text-slate-500 group-hover:border-(--color-deep-purple) group-hover:text-(--color-deep-purple)"
                   )}
                 >
                   {isPlaying ? (
@@ -108,13 +108,13 @@ export function SoundList({ data, selectedAmount, onSelectAmount }: SoundListPro
                   <p
                     className={cn(
                       "text-xs font-bold leading-tight",
-                      isSelected ? "text-[var(--color-deep-purple)]" : "text-slate-700"
+                      isSelected ? "text-(--color-deep-purple)" : "text-slate-700"
                     )}
                   >
                     {sound.name}
                   </p>
                   <p className="text-[10px] text-slate-400 font-medium mt-0.5">
-                    Durasi: {sound.duration} • IDR {sound.price.toLocaleString("id-ID")}
+                    Length: {sound.duration} • IDR {sound.price.toLocaleString("id-ID")}
                   </p>
                 </div>
               </div>
@@ -133,7 +133,7 @@ export function SoundList({ data, selectedAmount, onSelectAmount }: SoundListPro
                     </span>
                     <button
                       onClick={(e) => updateQuantity(e, 1)}
-                      className="w-6 h-6 flex items-center justify-center rounded-md hover:bg-slate-100 text-[var(--color-deep-purple)] transition-colors"
+                      className="w-6 h-6 flex items-center justify-center rounded-md hover:bg-slate-100 text-(--color-deep-purple) transition-colors"
                     >
                       <Plus size={12} strokeWidth={3} />
                     </button>
@@ -149,7 +149,7 @@ export function SoundList({ data, selectedAmount, onSelectAmount }: SoundListPro
         })}
       </div>
       <p className="text-[10px] text-slate-400 font-medium text-center pt-2">
-        *Total donasi dikalikan jumlah play sound
+        *Imperial total reflects the tally of fanfares
       </p>
     </Card>
   );

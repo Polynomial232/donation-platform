@@ -1,83 +1,47 @@
 "use client";
 
+import * as AvatarPrimitive from "@radix-ui/react-avatar";
 import * as React from "react";
+
 import { cn } from "@/lib/utils";
 
-const AvatarContext = React.createContext<{
-  status: "loading" | "loaded" | "error";
-  setStatus: (status: "loading" | "loaded" | "error") => void;
-} | null>(null);
+const Avatar = React.forwardRef<
+  React.ElementRef<typeof AvatarPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root>
+>(({ className, ...props }, ref) => (
+  <AvatarPrimitive.Root
+    ref={ref}
+    className={cn("relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full", className)}
+    {...props}
+  />
+));
+Avatar.displayName = AvatarPrimitive.Root.displayName;
 
-const Avatar = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => {
-    const [status, setStatus] = React.useState<"loading" | "loaded" | "error">("error");
-    // Default to error to show fallback immediately until image loads?
-    // Or default to loading?
-    // If loading, and fallback shows on loading, then it flickers.
-    // Radix usually shows fallback for delayMs.
-    // Let's default to "loading", and fallback shows if status != "loaded".
+const AvatarImage = React.forwardRef<
+  React.ElementRef<typeof AvatarPrimitive.Image>,
+  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Image>
+>(({ className, ...props }, ref) => (
+  <AvatarPrimitive.Image
+    ref={ref}
+    className={cn("aspect-square h-full w-full", className)}
+    {...props}
+  />
+));
+AvatarImage.displayName = AvatarPrimitive.Image.displayName;
 
-    return (
-      <AvatarContext.Provider value={{ status, setStatus }}>
-        <div
-          ref={ref}
-          className={cn("relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full", className)}
-          {...props}
-        />
-      </AvatarContext.Provider>
-    );
-  }
-);
-Avatar.displayName = "Avatar";
+const AvatarFallback = React.forwardRef<
+  React.ElementRef<typeof AvatarPrimitive.Fallback>,
+  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Fallback>
+>(({ className, ...props }, ref) => (
+  <AvatarPrimitive.Fallback
+    ref={ref}
+    className={cn(
+      "flex h-full w-full items-center justify-center rounded-[inherit] bg-slate-100 text-xs font-bold text-slate-500",
+      className
+    )}
+    {...props}
+  />
+));
+AvatarFallback.displayName = AvatarPrimitive.Fallback.displayName;
 
-const AvatarImage = React.forwardRef<HTMLImageElement, React.ImgHTMLAttributes<HTMLImageElement>>(
-  ({ className, src, alt, ...props }, ref) => {
-    const context = React.useContext(AvatarContext);
-    const setStatus = context?.setStatus;
-
-    React.useLayoutEffect(() => {
-      if (setStatus) setStatus("loading");
-    }, [src, setStatus]);
-
-    return (
-      <img
-        ref={ref}
-        src={src}
-        alt={alt}
-        onLoad={() => setStatus?.("loaded")}
-        onError={() => setStatus?.("error")}
-        className={cn(
-          "aspect-square h-full w-full",
-          className,
-          context?.status !== "loaded" && "hidden"
-        )}
-        {...props}
-      />
-    );
-  }
-);
-AvatarImage.displayName = "AvatarImage";
-
-const AvatarFallback = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => {
-    const context = React.useContext(AvatarContext);
-
-    if (context?.status === "loaded") {
-      return null;
-    }
-
-    return (
-      <div
-        ref={ref}
-        className={cn(
-          "flex h-full w-full items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800",
-          className
-        )}
-        {...props}
-      />
-    );
-  }
-);
-AvatarFallback.displayName = "AvatarFallback";
-
-export { Avatar, AvatarImage, AvatarFallback };
+export { Avatar, AvatarFallback, AvatarImage };

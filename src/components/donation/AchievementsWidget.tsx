@@ -4,94 +4,6 @@ import { Card } from "@/components/ui/card";
 import { Award } from "lucide-react";
 import Image from "next/image";
 
-interface Achievement {
-  id: string;
-  title: string;
-  description: string;
-  imageUrl: string;
-}
-
-const achievements: Achievement[] = [
-  {
-    id: "1",
-    title: "Official Partner",
-    description: "Verified content creator partner",
-    imageUrl: "https://i.imgur.com/1Z3MVNG.jpeg",
-  },
-  {
-    id: "2",
-    title: "Top Streamer",
-    description: "Streaming consistency is key!",
-    imageUrl: "https://i.imgur.com/1Z3MVNG.jpeg",
-  },
-  {
-    id: "3",
-    title: "Fast Responder",
-    description: "Replies to comments within 1 hour",
-    imageUrl: "https://i.imgur.com/1Z3MVNG.jpeg",
-  },
-  {
-    id: "4",
-    title: "1 Year",
-    description: "Active for 1+ year",
-    imageUrl: "https://i.imgur.com/1Z3MVNG.jpeg",
-  },
-  {
-    id: "5",
-    title: "Crowd Favorite",
-    description: "Most engaged community",
-    imageUrl: "https://i.imgur.com/1Z3MVNG.jpeg",
-  },
-  {
-    id: "5",
-    title: "Crowd Favorite",
-    description: "Most engaged community",
-    imageUrl: "https://i.imgur.com/1Z3MVNG.jpeg",
-  },
-  {
-    id: "5",
-    title: "Crowd Favorite",
-    description: "Most engaged community",
-    imageUrl: "https://i.imgur.com/1Z3MVNG.jpeg",
-  },
-  {
-    id: "5",
-    title: "Crowd Favorite",
-    description: "Most engaged community",
-    imageUrl: "https://i.imgur.com/1Z3MVNG.jpeg",
-  },
-  {
-    id: "5",
-    title: "Crowd Favorite",
-    description: "Most engaged community",
-    imageUrl: "https://i.imgur.com/1Z3MVNG.jpeg",
-  },
-  {
-    id: "5",
-    title: "Crowd Favorite",
-    description: "Most engaged community",
-    imageUrl: "https://i.imgur.com/1Z3MVNG.jpeg",
-  },
-  {
-    id: "5",
-    title: "Crowd Favorite",
-    description: "Most engaged community",
-    imageUrl: "https://i.imgur.com/1Z3MVNG.jpeg",
-  },
-  {
-    id: "5",
-    title: "Crowd Favorite",
-    description: "Most engaged community",
-    imageUrl: "https://i.imgur.com/1Z3MVNG.jpeg",
-  },
-  {
-    id: "5",
-    title: "Crowd Favorite",
-    description: "Most engaged community",
-    imageUrl: "https://i.imgur.com/1Z3MVNG.jpeg",
-  },
-];
-
 export function AchievementsWidget({ data }: { data?: any[] }) {
   const items = (data || []).map((item) => ({
     id: item.id,
@@ -103,17 +15,20 @@ export function AchievementsWidget({ data }: { data?: any[] }) {
   if (items.length === 0) return null;
 
   return (
-    <Card className="border-none shadow-[0_4px_20px_-2px_rgba(0,0,0,0.04),0_2px_8px_-1px_rgba(0,0,0,0.02)] rounded-2xl p-4 overflow-visible">
-      <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-        <Award size={14} /> Achievements
-      </h3>
+    <Card className="border border-slate-100 shadow-sm rounded-3xl overflow-hidden bg-white">
+      <div className="bg-linear-to-r from-slate-900 to-slate-800 px-5 py-4 flex items-center gap-3 border-b border-slate-800">
+        <div className="w-8 h-8 rounded-xl bg-amber-500/20 flex items-center justify-center shrink-0">
+          <Award size={16} className="text-amber-400" />
+        </div>
+        <h3 className="text-sm font-extrabold text-white tracking-tight">Imperial Honors</h3>
+      </div>
 
       {/* Flex Wrap Layout - No Scroll */}
-      <div className="flex flex-wrap gap-3 relative z-10">
+      <div className="flex flex-wrap gap-3 relative z-10 p-5">
         {items.map((item) => (
           <div key={item.id} className="group relative cursor-help">
             {/* Achievement Image */}
-            <div className="w-12 h-12 rounded-xl bg-slate-50 border-2 border-slate-100 p-1 transition-all duration-300 transform group-hover:scale-110 group-hover:-translate-y-1 group-hover:shadow-md group-hover:border-[var(--color-deep-purple)] relative z-20">
+            <div className="w-12 h-12 rounded-xl bg-slate-50 border-2 border-slate-100 p-1 transition-all duration-300 transform group-hover:scale-110 group-hover:-translate-y-1 group-hover:shadow-md group-hover:border-(--color-deep-purple) relative z-20">
               <div className="relative w-full h-full rounded-lg overflow-hidden">
                 <Image src={item.imageUrl} alt={item.title} fill className="object-cover" />
               </div>

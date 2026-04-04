@@ -27,13 +27,13 @@ export function DonationHistory({ data }: { data?: any[] }) {
   // Map API data to component data
   const historyItems: Donation[] = (data || []).map((item) => ({
     id: item.id || Math.random().toString(),
-    supporter: item.donorName,
-    avatar: item.donorAvatar || item.donor?.avatarUrl,
+    supporter: item.donor_name || "Nameless Knight",
+    avatar: item.donor_avatar,
     amount: item.amount,
     message: item.message,
-    type: "Donation", // Fallback to Donation
-    timestamp: new Date(item.createdAt),
-    mediaTitle: item.mediaUrl, // Just for display
+    type: item.type || "Donation", // Use type from API
+    timestamp: new Date(item.created_at),
+    mediaTitle: item.media_url, // Just for display
   }));
 
   const history = historyItems.slice(0, 10);
@@ -87,7 +87,7 @@ export function DonationHistory({ data }: { data?: any[] }) {
         </div>
 
         <div className="flex items-center gap-1.5 mt-0.5 mb-1.5">
-          <span className="bg-[var(--color-pastel-yellow)] text-[var(--color-deep-purple)] text-[10px] font-bold px-2 py-0.5 rounded-full">
+          <span className="bg-(--color-pastel-yellow) text-(--color-deep-purple) text-[10px] font-bold px-2 py-0.5 rounded-full">
             IDR {item.amount.toLocaleString("id-ID")}
           </span>
           {item.type === "Mediashare" && (
@@ -120,12 +120,15 @@ export function DonationHistory({ data }: { data?: any[] }) {
 
   return (
     <>
-      <Card className="p-5 border-none shadow-[0_4px_20px_-2px_rgba(0,0,0,0.04),0_2px_8px_-1px_rgba(0,0,0,0.02)] rounded-2xl bg-white">
-        <h3 className="font-extrabold text-sm text-slate-900 mb-4 flex items-center gap-2">
-          Recent Support <Heart className="w-4 h-4 text-red-500 fill-current" />
-        </h3>
+      <Card className="border border-slate-100 shadow-sm rounded-3xl bg-white overflow-hidden">
+        <div className="bg-slate-50/80 px-5 py-4 flex items-center gap-3 border-b border-slate-100">
+          <div className="w-8 h-8 rounded-xl bg-(--color-pastel-purple) flex items-center justify-center shrink-0">
+            <Heart size={16} className="text-(--color-deep-purple) fill-current" />
+          </div>
+          <h3 className="text-sm font-extrabold text-slate-900 tracking-tight">Recent Tributes</h3>
+        </div>
 
-        <ScrollArea className="h-[280px] w-full rounded-md pr-4">
+        <ScrollArea className="h-[280px] w-full mt-2 pr-4 pl-4 pt-2">
           <div className="space-y-4">
             {history.map((item) => (
               <HistoryItem key={item.id} item={item} />
@@ -133,19 +136,17 @@ export function DonationHistory({ data }: { data?: any[] }) {
           </div>
         </ScrollArea>
 
-        <button
-          onClick={() => setIsViewAllOpen(true)}
-          className="w-full mt-4 text-xs font-bold text-slate-400 hover:text-[var(--color-deep-purple)] py-2 transition-colors"
-        >
-          View all history
-        </button>
+        <div className="px-5 pb-4 pt-2">
+          <button
+            onClick={() => setIsViewAllOpen(true)}
+            className="w-full text-[11px] font-bold text-slate-500 hover:text-(--color-deep-purple) py-2 transition-colors border border-slate-100 rounded-xl hover:bg-slate-50 tracking-wide"
+          >
+            Consult all records
+          </button>
+        </div>
       </Card>
 
-      <Modal
-        isOpen={isViewAllOpen}
-        onClose={() => setIsViewAllOpen(false)}
-        title="Donation History"
-      >
+      <Modal isOpen={isViewAllOpen} onClose={() => setIsViewAllOpen(false)} title="Tribute Records">
         <ScrollArea className="h-[400px] pr-4">
           <div className="space-y-4">
             {fullHistory.map((item) => (
